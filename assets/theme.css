@@ -1267,27 +1267,58 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .builder-case {
+  --case-width: 180px;
+  --case-height: 180px;
+  --case-depth: 120px;
   position: relative;
-  width: min(300px, 72vw);
-  height: min(300px, 72vw);
-  transform: rotateX(12deg) rotateY(-18deg) scale3d(var(--builder-scale-x, 1), var(--builder-scale-y, 1), var(--builder-scale-z, 1));
+  width: var(--case-width);
+  height: var(--case-height);
+  transform-style: preserve-3d;
+  transform: rotateX(-20deg) rotateY(28deg) scale(1.08);
   transition: transform 0.3s ease;
 }
 
 .builder-face {
   position: absolute;
-  inset: 0;
-  border: 1px solid rgba(255,255,255,0.18);
+  left: 50%;
+  top: 50%;
+  border: 1px solid rgba(255,255,255,0.2);
   background: rgba(186,214,255,0.32);
-  box-shadow: inset 0 0 18px rgba(190,215,255,0.12);
+  box-shadow: inset 0 0 18px rgba(190,215,255,0.12), rgba(0, 0, 0, 0.22) 0 16px 22px;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
 }
 
-.builder-face--base { transform: translateZ(-8px) rotateX(90deg) translateY(86px); height: 100%; }
-.builder-face--back { transform: translateZ(-30px) rotateY(180deg); }
-.builder-face--top { transform: rotateX(90deg) translateZ(28px); }
-.builder-face--left { transform: rotateY(-90deg) translateZ(28px); }
-.builder-face--right { transform: rotateY(90deg) translateZ(28px); }
-.builder-face--front { transform: rotateY(0deg) translateZ(28px); }
+.builder-face--front,
+.builder-face--back {
+  width: var(--case-width);
+  height: var(--case-height);
+  margin-left: calc(var(--case-width) / -2);
+  margin-top: calc(var(--case-height) / -2);
+}
+
+.builder-face--left,
+.builder-face--right {
+  width: var(--case-depth);
+  height: var(--case-height);
+  margin-left: calc(var(--case-depth) / -2);
+  margin-top: calc(var(--case-height) / -2);
+}
+
+.builder-face--top,
+.builder-face--base {
+  width: var(--case-width);
+  height: var(--case-depth);
+  margin-left: calc(var(--case-width) / -2);
+  margin-top: calc(var(--case-depth) / -2);
+}
+
+.builder-face--front { transform: translateZ(calc(var(--case-depth) / 2)); }
+.builder-face--back { transform: rotateY(180deg) translateZ(calc(var(--case-depth) / 2)); }
+.builder-face--left { transform: rotateY(-90deg) translateZ(calc(var(--case-width) / 2)); }
+.builder-face--right { transform: rotateY(90deg) translateZ(calc(var(--case-width) / 2)); }
+.builder-face--top { transform: rotateX(90deg) translateZ(calc(var(--case-height) / 2)); }
+.builder-face--base { transform: rotateX(-90deg) translateZ(calc(var(--case-height) / 2)); }
 
 .builder-preview__meta {
   display: flex;

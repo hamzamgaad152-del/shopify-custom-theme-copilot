@@ -162,14 +162,14 @@ function initBespokeBuilder() {
   function updatePreview(state) {
     const palette = {
       clear: 'rgba(186, 214, 255, 0.32)',
-      black: '#171a1d',
-      smoked: 'rgba(142, 152, 168, 0.72)',
-      white: '#f2f3f4',
-      blue: '#2c4d82',
-      red: '#6f1d1b',
-      green: '#295840',
-      gold: '#b99334',
-      silver: '#a8b1bb'
+      'noir-profond': '#171a1d',
+      'fume': 'rgba(142, 152, 168, 0.72)',
+      'blanc-opale': '#f2f3f4',
+      'bleu-nuit': '#2c4d82',
+      'rouge-carmin': '#6f1d1b',
+      'vert-racing': '#295840',
+      'or-miroir': '#b99334',
+      'argent-miroir': '#a8b1bb'
     };
 
     Object.entries(state.panels).forEach(([key, value]) => {
@@ -177,12 +177,13 @@ function initBespokeBuilder() {
       if (face) face.style.background = palette[value] || palette.clear;
     });
 
-    const width = state.width / 28;
-    const depth = state.depth / 18;
-    const height = state.height / 22;
-    caseElement.style.setProperty('--builder-scale-x', String(width));
-    caseElement.style.setProperty('--builder-scale-y', String(height));
-    caseElement.style.setProperty('--builder-scale-z', String(depth));
+    const widthPx = Math.max(120, Math.min(240, state.width * 6));
+    const depthPx = Math.max(80, Math.min(170, state.depth * 5));
+    const heightPx = Math.max(120, Math.min(240, state.height * 6));
+
+    caseElement.style.setProperty('--case-width', `${widthPx}px`);
+    caseElement.style.setProperty('--case-depth', `${depthPx}px`);
+    caseElement.style.setProperty('--case-height', `${heightPx}px`);
   }
 
   function syncInputs(state) {
