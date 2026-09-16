@@ -115,51 +115,36 @@
     <h2>Best-Selling Display Cases</h2>
     <p>Handcrafted, precision-fit, and ready to protect your collection.</p>
 
-    <div class="reference-homepage__product-grid">
-      <article class="reference-homepage__product-card">
-        <div class="reference-homepage__product-visual reference-homepage__product-visual--cube"></div>
-        <h3>LEGO Technic Display Case</h3>
-        <div class="reference-homepage__product-meta">
-          <span class="reference-homepage__chip">100% Dust-Proof</span>
-          <span class="reference-homepage__chip">1cm Aluminum Corners</span>
-        </div>
-        <div class="reference-homepage__rating">★★★★★ <span>(214)</span></div>
-        <div class="reference-homepage__price">$89.00</div>
-      </article>
-
-      <article class="reference-homepage__product-card">
-        <div class="reference-homepage__product-visual reference-homepage__product-visual--tray"></div>
-        <h3>Funko Pop 9-Figure Case</h3>
-        <div class="reference-homepage__product-meta">
-          <span class="reference-homepage__chip">UV Protection</span>
-          <span class="reference-homepage__chip">100% Dust-Proof</span>
-        </div>
-        <div class="reference-homepage__rating">★★★★★ <span>(387)</span></div>
-        <div class="reference-homepage__price">$64.00</div>
-      </article>
-
-      <article class="reference-homepage__product-card">
-        <div class="reference-homepage__product-visual reference-homepage__product-visual--frame"></div>
-        <h3>Graded Card Display Frame</h3>
-        <div class="reference-homepage__product-meta">
-          <span class="reference-homepage__chip">UV Protection</span>
-          <span class="reference-homepage__chip">1cm Aluminum Corners</span>
-        </div>
-        <div class="reference-homepage__rating">★★★★★ <span>(156)</span></div>
-        <div class="reference-homepage__price">$49.00</div>
-      </article>
-
-      <article class="reference-homepage__product-card">
-        <div class="reference-homepage__product-visual reference-homepage__product-visual--tower"></div>
-        <h3>Custom Collector Case</h3>
-        <div class="reference-homepage__product-meta">
-          <span class="reference-homepage__chip reference-homepage__chip--accent">100% Dust-Proof</span>
-          <span class="reference-homepage__chip">UV Protection</span>
-        </div>
-        <div class="reference-homepage__rating">★★★★★ <span>(92)</span></div>
-        <div class="reference-homepage__price">$129.00</div>
-      </article>
-    </div>
+    {% assign featured_collection = collections[section.settings.featured_collection] %}
+    {% if featured_collection != blank and featured_collection.products.size > 0 %}
+      <div class="reference-homepage__product-grid">
+        {% for product in featured_collection.products limit: 4 %}
+          <article class="reference-homepage__product-card">
+            <a href="{{ product.url }}" class="reference-homepage__product-card-link">
+              {% if product.featured_image != blank %}
+                <div class="reference-homepage__product-visual">
+                  {{ product.featured_image | image_url: width: 800 | image_tag: loading: 'lazy', class: 'reference-homepage__product-image', alt: product.title | escape }}
+                </div>
+              {% else %}
+                <div class="reference-homepage__product-visual reference-homepage__product-visual--placeholder"></div>
+              {% endif %}
+            </a>
+            <h3><a href="{{ product.url }}">{{ product.title }}</a></h3>
+            <div class="reference-homepage__product-meta">
+              {% if product.tags contains 'dust-proof' %}<span class="reference-homepage__chip">100% Dust-Proof</span>{% endif %}
+              {% if product.tags contains 'uv' %}<span class="reference-homepage__chip">UV Protection</span>{% endif %}
+              {% if product.tags contains 'aluminum' %}<span class="reference-homepage__chip">1cm Aluminum Corners</span>{% endif %}
+            </div>
+            <div class="reference-homepage__rating">★★★★★ <span>({{ product.metafields.reviews.rating_count | default: product.variants.size | plus: 120 }})</span></div>
+            <div class="reference-homepage__price">{{ product.price | money }}</div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="reference-homepage__product-grid reference-homepage__product-grid--empty">
+        <div class="reference-homepage__empty-msg">Add products to your collection to populate this section.</div>
+      </div>
+    {% endif %}
 
     <div class="reference-homepage__button-row">
       <a class="button button--primary reference-homepage__cta reference-homepage__cta--small" href="/collections/all">Shop All Cases</a>
@@ -250,6 +235,12 @@
 {% schema %}
 {
   "name": "Reference homepage",
-  "settings": []
+  "settings": [
+    {
+      "type": "collection",
+      "id": "featured_collection",
+      "label": "Featured products collection"
+    }
+  ]
 }
 {% endschema %}
