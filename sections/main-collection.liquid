@@ -1,66 +1,53 @@
 {%- paginate collection.products by section.settings.products_per_page -%}
-<section class="collection-page" style="padding: 48px 0;">
+<section class="collection-page">
   <div class="container">
-    <div class="section-header">
+    <div class="section-header section-header--stacked">
       <div>
+        <p class="eyebrow">Collection</p>
         <h1 class="section-title">{{ collection.title }}</h1>
-        {%- if collection.description != blank -%}
-          <p style="color: var(--color-secondary); margin-top: 8px; max-width: 600px;">
-            {{ collection.description }}
-          </p>
-        {%- endif -%}
+        {% if collection.description != blank %}
+          <p class="section-intro">{{ collection.description }}</p>
+        {% endif %}
       </div>
 
-      <!-- Collection Sort -->
-      <div>
-        <label for="SortBy" class="visually-hidden">{{ 'sections.collection.sort_by' | t }}</label>
+      <div class="collection-controls">
+        <label for="SortBy" class="visually-hidden">Trier</label>
         <select id="SortBy" class="product-form__select" onchange="location = this.value;">
-          {%- assign sort_by = collection.sort_by | default: collection.default_sort_by -%}
-          {%- for option in collection.sort_options -%}
-            <option value="{{ '?sort_by=' | append: option.value }}" {% if option.value == sort_by %}selected="selected"{% endif %}>
-              {{ option.name }}
-            </option>
-          {%- endfor -%}
+          {% assign sort_by = collection.sort_by | default: collection.default_sort_by %}
+          {% for option in collection.sort_options %}
+            <option value="{{ '?sort_by=' | append: option.value }}" {% if option.value == sort_by %}selected="selected"{% endif %}>{{ option.name }}</option>
+          {% endfor %}
         </select>
       </div>
     </div>
 
-    <!-- Product Grid -->
-    {%- if collection.products.size > 0 -%}
+    {% if collection.products.size > 0 %}
       <div class="product-grid">
-        {%- for product in collection.products -%}
+        {% for product in collection.products %}
           {% render 'product-card', product: product %}
-        {%- endfor -%}
+        {% endfor %}
       </div>
 
-      <!-- Pagination -->
-      {%- if paginate.pages > 1 -%}
-        <div style="margin-top: 48px; display: flex; justify-content: center; gap: 12px; align-items: center;">
-          {%- if paginate.previous -%}
-            <a href="{{ paginate.previous.url }}" class="button button--secondary">&larr; Previous</a>
-          {%- endif -%}
-          <span>Page {{ paginate.current_page }} of {{ paginate.pages }}</span>
-          {%- if paginate.next -%}
-            <a href="{{ paginate.next.url }}" class="button button--secondary">Next &rarr;</a>
-          {%- endif -%}
+      {% if paginate.pages > 1 %}
+        <div class="collection-pagination">
+          {% if paginate.previous %}<a href="{{ paginate.previous.url }}" class="button button--secondary">&larr; Précédent</a>{% endif %}
+          <span>Page {{ paginate.current_page }} / {{ paginate.pages }}</span>
+          {% if paginate.next %}<a href="{{ paginate.next.url }}" class="button button--secondary">Suivant &rarr;</a>{% endif %}
         </div>
-      {%- endif -%}
-
-    {%- else -%}
-      <div style="text-align: center; padding: 60px 0;">
-        <p style="font-size: 1.15rem; color: var(--color-secondary);">{{ 'sections.collection.empty' | t }}</p>
-        <a href="{{ routes.all_products_collection_url }}" class="button button--primary" style="margin-top: 16px;">
-          {{ 'general.continue_shopping' | t }}
-        </a>
+      {% endif %}
+    {% else %}
+      <div class="empty-state">
+        <p>Votre référence n'est pas encore au catalogue. Créons-la ensemble.</p>
+        <a href="/pages/sur-mesure" class="button button--primary">Concevoir mon écrin</a>
       </div>
-    {%- endif -%}
+    {% endif %}
   </div>
 </section>
 {%- endpaginate -%}
 
 {% schema %}
 {
-  "name": "Collection Grid",
+  "name": "Collection grid",
   "settings": [
     {
       "type": "range",

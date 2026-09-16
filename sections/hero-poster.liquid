@@ -1,0 +1,100 @@
+<section class="hero-poster{% if section.settings.enable_motion %} hero-poster--motion{% endif %}" style="--hero-overlay: {{ section.settings.overlay_opacity | default: 35 }}%;">
+  <div class="hero-poster__media">
+    {% if section.settings.image != blank %}
+      {{ section.settings.image | image_url: width: 1800 | image_tag: class: 'hero-poster__image desktop', loading: 'eager', fetchpriority: 'high', alt: section.settings.heading | escape }}
+    {% else %}
+      <div class="hero-poster__fallback"></div>
+    {% endif %}
+    {% if section.settings.mobile_image != blank %}
+      {{ section.settings.mobile_image | image_url: width: 900 | image_tag: class: 'hero-poster__image mobile', loading: 'eager', fetchpriority: 'high', alt: section.settings.heading | escape }}
+    {% endif %}
+  </div>
+  <div class="hero-poster__overlay"></div>
+  <div class="container hero-poster__content-wrap">
+    <div class="hero-poster__content">
+      {% if section.settings.overline != blank %}
+        <p class="eyebrow">{{ section.settings.overline }}</p>
+      {% endif %}
+      <h1>{{ section.settings.heading }}</h1>
+      <p class="hero-poster__subheading">{{ section.settings.subheading }}</p>
+      <div class="hero-poster__actions">
+        <a class="button button--primary" href="{{ section.settings.primary_link | default: '/collections/all' }}">{{ section.settings.primary_label }}</a>
+        <a class="button button--secondary" href="{{ section.settings.secondary_link | default: '/pages/sur-mesure' }}">{{ section.settings.secondary_label }}</a>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-cue" aria-hidden="true"><span></span></div>
+</section>
+
+{% schema %}
+{
+  "name": "Hero poster",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Desktop image"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "Mobile image"
+    },
+    {
+      "type": "text",
+      "id": "overline",
+      "label": "Overline",
+      "default": "Atelier de protection"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Ce ne sont pas des jouets. Ce sont des légendes."
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Des écrins en Plexiglas, taillés à la main en France, pour les pièces qui méritent mieux qu'une étagère."
+    },
+    {
+      "type": "text",
+      "id": "primary_label",
+      "label": "Primary CTA label",
+      "default": "Trouver mon modèle"
+    },
+    {
+      "type": "url",
+      "id": "primary_link",
+      "label": "Primary CTA link"
+    },
+    {
+      "type": "text",
+      "id": "secondary_label",
+      "label": "Secondary CTA label",
+      "default": "Créer sur mesure"
+    },
+    {
+      "type": "url",
+      "id": "secondary_link",
+      "label": "Secondary CTA link"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 10,
+      "max": 80,
+      "step": 5,
+      "default": 38,
+      "label": "Overlay opacity"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_motion",
+      "label": "Enable motion",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

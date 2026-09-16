@@ -1,0 +1,29 @@
+<section class="catalogue-split reveal">
+  <div class="container">
+    <div class="catalogue-split__grid">
+      <a class="catalogue-tile catalogue-tile--lego" href="{{ routes.all_products_collection_url }}?collection=lego">
+        <div class="catalogue-tile__content">
+          <span class="eyebrow">LEGO</span>
+          <h2>Vos constructions, exposées.</h2>
+        </div>
+      </a>
+      <a class="catalogue-tile catalogue-tile--funko" href="{{ routes.all_products_collection_url }}?collection=funko-pop">
+        <div class="catalogue-tile__content">
+          <span class="eyebrow">FUNKO POP</span>
+          <h2>Vos figurines, en vitrine.</h2>
+        </div>
+      </a>
+    </div>
+    <div class="catalogue-search">
+      <label for="catalogue-search-field" class="visually-hidden">Recherche</label>
+      <input id="catalogue-search-field" type="search" placeholder="Cherchez votre référence (ex. 42096, Porsche, Batman…)" data-predictive-search>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Catalogue split",
+  "settings": []
+}
+{% endschema %}

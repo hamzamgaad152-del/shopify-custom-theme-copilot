@@ -1,0 +1,61 @@
+<section class="reassurance-strip">
+  <div class="container">
+    <div class="reassurance-strip__list">
+      {% for block in section.blocks %}
+        <div class="reassurance-item reveal" {{ block.shopify_attributes }}>
+          <div class="reassurance-item__icon">
+            {% if block.settings.icon_name == 'uv' %}{% render 'icon', name: 'shield' %}{% endif %}
+            {% if block.settings.icon_name == 'dust' %}{% render 'icon', name: 'sparkles' %}{% endif %}
+            {% if block.settings.icon_name == 'france' %}{% render 'icon', name: 'flag' %}{% endif %}
+            {% if block.settings.icon_name == 'fit' %}{% render 'icon', name: 'ruler' %}{% endif %}
+          </div>
+          <span>{{ block.settings.text }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Reassurance strip",
+  "max_blocks": 4,
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Item",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon_name",
+          "label": "Icon",
+          "options": [
+            { "value": "uv", "label": "UV" },
+            { "value": "dust", "label": "Dust" },
+            { "value": "france", "label": "France" },
+            { "value": "fit", "label": "Exact fit" }
+          ],
+          "default": "uv"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Filtre anti-UV"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Reassurance strip",
+      "blocks": [
+        { "type": "item", "settings": { "icon_name": "uv", "text": "Filtre anti-UV" } },
+        { "type": "item", "settings": { "icon_name": "dust", "text": "Sans poussière" } },
+        { "type": "item", "settings": { "icon_name": "france", "text": "Fait main en France" } },
+        { "type": "item", "settings": { "icon_name": "fit", "text": "Découpé pour votre modèle exact" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
