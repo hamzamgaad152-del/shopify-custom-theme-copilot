@@ -1,71 +1,11 @@
 {
   "sections": {
-    "hero": {
-      "type": "hero-poster",
-      "settings": {
-        "overline": "Atelier de protection",
-        "heading": "Ce ne sont pas des jouets. Ce sont des légendes.",
-        "subheading": "Des écrins en Plexiglas, taillés à la main en France, pour les pièces qui méritent mieux qu'une étagère.",
-        "primary_label": "Trouver mon modèle",
-        "primary_link": "/collections/all",
-        "secondary_label": "Créer sur mesure",
-        "secondary_link": "/pages/sur-mesure",
-        "overlay_opacity": 38,
-        "enable_motion": true
-      }
-    },
-    "reassurance": {
-      "type": "reassurance-strip",
-      "blocks": {
-        "uv": {
-          "type": "item",
-          "settings": {
-            "icon_name": "uv",
-            "text": "Filtre anti-UV"
-          }
-        },
-        "dust": {
-          "type": "item",
-          "settings": {
-            "icon_name": "dust",
-            "text": "Sans poussière"
-          }
-        },
-        "france": {
-          "type": "item",
-          "settings": {
-            "icon_name": "france",
-            "text": "Fait main en France"
-          }
-        },
-        "fit": {
-          "type": "item",
-          "settings": {
-            "icon_name": "fit",
-            "text": "Découpé pour votre modèle exact"
-          }
-        }
-      },
-      "block_order": ["uv", "dust", "france", "fit"]
-    },
-    "manifesto": {
-      "type": "manifesto",
-      "settings": {}
-    },
-    "catalogue": {
-      "type": "catalogue-split",
-      "settings": {}
-    },
-    "co_creation": {
-      "type": "co-creation",
+    "reference_homepage": {
+      "type": "reference-homepage",
       "settings": {}
     }
   },
   "order": [
-    "hero",
-    "reassurance",
-    "manifesto",
-    "catalogue",
-    "co_creation"
+    "reference_homepage"
   ]
 }
