@@ -1,1 +1,20 @@
-{}
+{
+  "settings": {
+    "brand_name": "Brand name",
+    "brand_domain": "Brand domain",
+    "color_primary": "Page background",
+    "color_secondary": "Raised surface",
+    "color_accent": "Accent gold",
+    "color_background": "Content background",
+    "color_surface": "Card background",
+    "color_text": "Text",
+    "color_border": "Borders",
+    "color_text_muted": "Muted text",
+    "font_heading": "Heading font",
+    "font_body": "Body font",
+    "font_technical": "Technical font",
+    "social_instagram_link": "Instagram",
+    "social_email": "Contact email"
+  }
+}
+

@@ -5,6 +5,10 @@
     },
     "blog": {
       "empty": "There are no articles yet."
+    },
+    "brand": {
+      "name": "ECRINLUX",
+      "domain": "ecrinlux.fr"
     }
   },
   "customer": {
@@ -14,6 +18,11 @@
     },
     "login_page": {
       "title": "Log in"
+    }
+  },
+  "shop": {
+    "legal": {
+      "disclaimer": "LEGO® and Funko Pop!® are registered trademarks of their respective owners. ECRINLUX is not affiliated with, sponsored by, or endorsed by these companies. Our display cases are sold empty — the model is not included."
     }
   }
 }

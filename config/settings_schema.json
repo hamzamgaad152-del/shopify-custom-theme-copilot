@@ -1,66 +1,162 @@
 [
   {
     "name": "theme_info",
-    "theme_name": "Custom Starter Theme",
+    "theme_name": "ECRINLUX",
     "theme_version": "1.0.0",
-    "theme_author": "Antigravity Dev",
+    "theme_author": "ECRINLUX Studio",
     "theme_documentation_url": "https://shopify.dev/docs/themes",
     "theme_support_url": "https://help.shopify.com"
   },
   {
-    "name": "Colors",
+    "name": "Brand",
     "settings": [
       {
-        "type": "color",
-        "id": "color_primary",
-        "label": "Primary color",
-        "default": "#111827"
+        "type": "text",
+        "id": "brand_name",
+        "label": "Brand name",
+        "default": "ECRINLUX"
       },
       {
-        "type": "color",
-        "id": "color_secondary",
-        "label": "Secondary color",
-        "default": "#4b5563"
+        "type": "text",
+        "id": "brand_domain",
+        "label": "Brand domain",
+        "default": "ecrinlux.fr"
       },
       {
-        "type": "color",
-        "id": "color_accent",
-        "label": "Accent color",
-        "default": "#2563eb"
-      },
-      {
-        "type": "color",
-        "id": "color_background",
-        "label": "Background color",
-        "default": "#ffffff"
-      },
-      {
-        "type": "color",
-        "id": "color_surface",
-        "label": "Surface / Card background",
-        "default": "#f9fafb"
-      },
-      {
-        "type": "color",
-        "id": "color_text",
-        "label": "Body text color",
-        "default": "#1f2937"
-      },
-      {
-        "type": "color",
-        "id": "color_border",
-        "label": "Border color",
-        "default": "#e5e7eb"
+        "type": "checkbox",
+        "id": "show_brand_protection_disclaimer",
+        "label": "Show trademark protection disclaimer",
+        "default": true
       }
     ]
   },
   {
-    "name": "Social Media",
+    "name": "Palette",
+    "settings": [
+      {
+        "type": "color",
+        "id": "color_primary",
+        "label": "Page background",
+        "default": "#08090A"
+      },
+      {
+        "type": "color",
+        "id": "color_secondary",
+        "label": "Raised surface",
+        "default": "#101214"
+      },
+      {
+        "type": "color",
+        "id": "color_accent",
+        "label": "Accent gold",
+        "default": "#C9A227"
+      },
+      {
+        "type": "color",
+        "id": "color_background",
+        "label": "Content background",
+        "default": "#171A1D"
+      },
+      {
+        "type": "color",
+        "id": "color_surface",
+        "label": "Card / panel background",
+        "default": "#101214"
+      },
+      {
+        "type": "color",
+        "id": "color_text",
+        "label": "Text",
+        "default": "#F2F3F4"
+      },
+      {
+        "type": "color",
+        "id": "color_border",
+        "label": "Borders / hairlines",
+        "default": "#23272B"
+      },
+      {
+        "type": "color",
+        "id": "color_text_muted",
+        "label": "Muted text",
+        "default": "#8C9298"
+      },
+      {
+        "type": "color",
+        "id": "color_glow",
+        "label": "Acrylic glow",
+        "default": "#BFD7FF"
+      }
+    ]
+  },
+  {
+    "name": "Typography",
+    "settings": [
+      {
+        "type": "select",
+        "id": "font_heading",
+        "label": "Heading font",
+        "options": [
+          { "value": "Cormorant", "label": "Cormorant" },
+          { "value": "Playfair Display", "label": "Playfair Display" },
+          { "value": "Archivo", "label": "Archivo" }
+        ],
+        "default": "Cormorant"
+      },
+      {
+        "type": "select",
+        "id": "font_body",
+        "label": "Body font",
+        "options": [
+          { "value": "Inter", "label": "Inter" },
+          { "value": "Satoshi", "label": "Satoshi" },
+          { "value": "Helvetica Neue", "label": "Helvetica Neue" }
+        ],
+        "default": "Inter"
+      },
+      {
+        "type": "select",
+        "id": "font_technical",
+        "label": "Technical data font",
+        "options": [
+          { "value": "JetBrains Mono", "label": "JetBrains Mono" },
+          { "value": "IBM Plex Mono", "label": "IBM Plex Mono" }
+        ],
+        "default": "JetBrains Mono"
+      }
+    ]
+  },
+  {
+    "name": "Commerce",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "show_free_shipping_progress",
+        "label": "Show free shipping progress bar",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "free_shipping_threshold",
+        "label": "Free shipping threshold (€)",
+        "default": "200"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_cookie_banner",
+        "label": "Enable cookie banner",
+        "default": true
+      }
+    ]
+  },
+  {
+    "name": "Social media",
     "settings": [
       {
         "type": "text",
-        "id": "social_twitter_link",
-        "label": "Twitter / X URL"
+        "id": "social_instagram_link",
+        "label": "Instagram URL",
+        "default": "https://instagram.com"
       },
       {
         "type": "text",
@@ -69,18 +165,14 @@
       },
       {
         "type": "text",
-        "id": "social_instagram_link",
-        "label": "Instagram URL"
+        "id": "social_pinterest_link",
+        "label": "Pinterest URL"
       },
       {
         "type": "text",
-        "id": "social_youtube_link",
-        "label": "YouTube URL"
-      },
-      {
-        "type": "text",
-        "id": "social_tiktok_link",
-        "label": "TikTok URL"
+        "id": "social_email",
+        "label": "Contact email",
+        "default": "bonjour@ecrinlux.fr"
       }
     ]
   }

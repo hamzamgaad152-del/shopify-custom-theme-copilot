@@ -1,1 +1,20 @@
-{}
+{
+  "settings": {
+    "brand_name": "Nom de marque",
+    "brand_domain": "Domaine de marque",
+    "color_primary": "Fond de page",
+    "color_secondary": "Surface surélevée",
+    "color_accent": "Accent doré",
+    "color_background": "Fond de contenu",
+    "color_surface": "Fond de carte",
+    "color_text": "Texte",
+    "color_border": "Lignes",
+    "color_text_muted": "Texte secondaire",
+    "font_heading": "Police des titres",
+    "font_body": "Police du corps",
+    "font_technical": "Police technique",
+    "social_instagram_link": "Instagram",
+    "social_email": "Email de contact"
+  }
+}
+

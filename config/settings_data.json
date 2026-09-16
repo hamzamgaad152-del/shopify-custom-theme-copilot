@@ -1,12 +1,27 @@
 {
   "current": {
-    "color_primary": "#111827",
-    "color_secondary": "#4b5563",
-    "color_accent": "#2563eb",
-    "color_background": "#ffffff",
-    "color_surface": "#f9fafb",
-    "color_text": "#1f2937",
-    "color_border": "#e5e7eb",
+    "brand_name": "ECRINLUX",
+    "brand_domain": "ecrinlux.fr",
+    "show_brand_protection_disclaimer": true,
+    "color_primary": "#08090A",
+    "color_secondary": "#101214",
+    "color_accent": "#C9A227",
+    "color_background": "#171A1D",
+    "color_surface": "#101214",
+    "color_text": "#F2F3F4",
+    "color_border": "#23272B",
+    "color_text_muted": "#8C9298",
+    "color_glow": "#BFD7FF",
+    "font_heading": "Cormorant",
+    "font_body": "Inter",
+    "font_technical": "JetBrains Mono",
+    "show_free_shipping_progress": true,
+    "free_shipping_threshold": "200",
+    "enable_cookie_banner": true,
+    "social_instagram_link": "https://instagram.com",
+    "social_facebook_link": "",
+    "social_pinterest_link": "",
+    "social_email": "bonjour@ecrinlux.fr",
     "sections": {
       "header": {
         "type": "header",
@@ -24,14 +39,29 @@
     }
   },
   "presets": {
-    "Default": {
-      "color_primary": "#111827",
-      "color_secondary": "#4b5563",
-      "color_accent": "#2563eb",
-      "color_background": "#ffffff",
-      "color_surface": "#f9fafb",
-      "color_text": "#1f2937",
-      "color_border": "#e5e7eb"
+    "ECRINLUX Dark": {
+      "brand_name": "ECRINLUX",
+      "brand_domain": "ecrinlux.fr",
+      "show_brand_protection_disclaimer": true,
+      "color_primary": "#08090A",
+      "color_secondary": "#101214",
+      "color_accent": "#C9A227",
+      "color_background": "#171A1D",
+      "color_surface": "#101214",
+      "color_text": "#F2F3F4",
+      "color_border": "#23272B",
+      "color_text_muted": "#8C9298",
+      "color_glow": "#BFD7FF",
+      "font_heading": "Cormorant",
+      "font_body": "Inter",
+      "font_technical": "JetBrains Mono",
+      "show_free_shipping_progress": true,
+      "free_shipping_threshold": "200",
+      "enable_cookie_banner": true,
+      "social_instagram_link": "https://instagram.com",
+      "social_facebook_link": "",
+      "social_pinterest_link": "",
+      "social_email": "bonjour@ecrinlux.fr"
     }
   }
 }
