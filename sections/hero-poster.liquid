@@ -19,7 +19,7 @@
       <p class="hero-poster__subheading">{{ section.settings.subheading }}</p>
       <div class="hero-poster__actions">
         <a class="button button--primary" href="{{ section.settings.primary_link | default: '/collections/all' }}">{{ section.settings.primary_label }}</a>
-        <a class="button button--secondary" href="{{ section.settings.secondary_link | default: '/pages/sur-mesure' }}">{{ section.settings.secondary_label }}</a>
+        <a class="button button--secondary" href="{{ section.settings.secondary_link | default: pages['sur-mesure'].url | default: '/pages/sur-mesure' }}">{{ section.settings.secondary_label }}</a>
       </div>
     </div>
   </div>

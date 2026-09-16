@@ -50,7 +50,7 @@
             <p class="eyebrow">{{ 'search.custom_eyebrow' | t }}</p>
             <h2 style="margin: 0 0 0.75rem; font-size: clamp(2rem, 3vw, 3rem);">{{ 'search.custom_title' | t }}</h2>
             <p style="margin: 0 0 1.5rem; color: rgba(242,243,244,0.8);">{{ 'search.custom_text' | t }}</p>
-            <a class="button button--primary" href="/pages/sur-mesure">{{ 'search.custom_cta' | t }}</a>
+            <a class="button button--primary" href="{{ pages['sur-mesure'].url | default: '/pages/sur-mesure' }}">{{ 'search.custom_cta' | t }}</a>
           </div>
         </div>
       {%- endif -%}

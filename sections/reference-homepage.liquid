@@ -13,7 +13,7 @@
 
       <div class="reference-homepage__actions">
         <a class="button button--primary reference-homepage__cta" href="/collections/all">Shop Display Cases</a>
-        <a class="button button--secondary reference-homepage__cta" href="/pages/sur-mesure">Build a Custom Case</a>
+        <a class="button button--secondary reference-homepage__cta" href="{{ pages['sur-mesure'].url | default: '/pages/sur-mesure' }}">Build a Custom Case</a>
       </div>
 
       <ul class="reference-homepage__benefits">
@@ -68,7 +68,7 @@
         <div class="reference-homepage__collection-visual reference-homepage__collection-visual--custom"></div>
         <div class="reference-homepage__collection-meta">
           <h3>Custom Sizes</h3>
-          <a href="/pages/sur-mesure">Shop Now <span>→</span></a>
+          <a href="{{ pages['sur-mesure'].url | default: '/pages/sur-mesure' }}">Shop Now <span>→</span></a>
         </div>
       </article>
     </div>
@@ -228,7 +228,7 @@
     <div class="reference-homepage__button-row reference-homepage__button-row--final">
       <a class="button button--primary reference-homepage__cta reference-homepage__cta--large" href="/collections/all">Shop All Display Cases</a>
     </div>
-    <a class="reference-homepage__secondary-link" href="/pages/sur-mesure">Design a Custom Case <span>→</span></a>
+    <a class="reference-homepage__secondary-link" href="{{ pages['sur-mesure'].url | default: '/pages/sur-mesure' }}">Design a Custom Case <span>→</span></a>
   </div>
 </section>
 

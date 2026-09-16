@@ -24,7 +24,7 @@
           <p>Pour les Porsche 911 RSR, les kits premium, les modèles légendaires et les pièces de collection qui ne doivent pas tomber dans l’oubli.</p>
           <div class="catalogue-panel__actions">
             <a class="button button--primary" href="/collections/lego">Voir la collection LEGO</a>
-            <a class="button button--secondary" href="/pages/sur-mesure">Créer un écrin sur mesure</a>
+            <a class="button button--secondary" href="{{ pages['sur-mesure'].url | default: '/pages/sur-mesure' }}">Créer un écrin sur mesure</a>
           </div>
         </div>
       </div>
@@ -37,7 +37,7 @@
           <p>Pour les éditions rares, les séries limitées, les personnages cultes et les pièces que l’on garde devant soi comme un objet de mémoire.</p>
           <div class="catalogue-panel__actions">
             <a class="button button--primary" href="/collections/funko-pop">Voir la collection Funko Pop</a>
-            <a class="button button--secondary" href="/pages/sur-mesure">Créer un écrin sur mesure</a>
+            <a class="button button--secondary" href="{{ pages['sur-mesure'].url | default: '/pages/sur-mesure' }}">Créer un écrin sur mesure</a>
           </div>
         </div>
       </div>

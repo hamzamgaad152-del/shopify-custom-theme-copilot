@@ -38,7 +38,7 @@
     {% else %}
       <div class="empty-state">
         <p>Votre référence n'est pas encore au catalogue. Créons-la ensemble.</p>
-        <a href="/pages/sur-mesure" class="button button--primary">Concevoir mon écrin</a>
+        <a href="{{ pages['sur-mesure'].url | default: '/pages/sur-mesure' }}" class="button button--primary">Concevoir mon écrin</a>
       </div>
     {% endif %}
   </div>
