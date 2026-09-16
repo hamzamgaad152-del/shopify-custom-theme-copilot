@@ -1,0 +1,76 @@
+{%- paginate collection.products by section.settings.products_per_page -%}
+<section class="collection-page" style="padding: 48px 0;">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <h1 class="section-title">{{ collection.title }}</h1>
+        {%- if collection.description != blank -%}
+          <p style="color: var(--color-secondary); margin-top: 8px; max-width: 600px;">
+            {{ collection.description }}
+          </p>
+        {%- endif -%}
+      </div>
+
+      <!-- Collection Sort -->
+      <div>
+        <label for="SortBy" class="visually-hidden">{{ 'sections.collection.sort_by' | t }}</label>
+        <select id="SortBy" class="product-form__select" onchange="location = this.value;">
+          {%- assign sort_by = collection.sort_by | default: collection.default_sort_by -%}
+          {%- for option in collection.sort_options -%}
+            <option value="{{ '?sort_by=' | append: option.value }}" {% if option.value == sort_by %}selected="selected"{% endif %}>
+              {{ option.name }}
+            </option>
+          {%- endfor -%}
+        </select>
+      </div>
+    </div>
+
+    <!-- Product Grid -->
+    {%- if collection.products.size > 0 -%}
+      <div class="product-grid">
+        {%- for product in collection.products -%}
+          {% render 'product-card', product: product %}
+        {%- endfor -%}
+      </div>
+
+      <!-- Pagination -->
+      {%- if paginate.pages > 1 -%}
+        <div style="margin-top: 48px; display: flex; justify-content: center; gap: 12px; align-items: center;">
+          {%- if paginate.previous -%}
+            <a href="{{ paginate.previous.url }}" class="button button--secondary">&larr; Previous</a>
+          {%- endif -%}
+          <span>Page {{ paginate.current_page }} of {{ paginate.pages }}</span>
+          {%- if paginate.next -%}
+            <a href="{{ paginate.next.url }}" class="button button--secondary">Next &rarr;</a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+    {%- else -%}
+      <div style="text-align: center; padding: 60px 0;">
+        <p style="font-size: 1.15rem; color: var(--color-secondary);">{{ 'sections.collection.empty' | t }}</p>
+        <a href="{{ routes.all_products_collection_url }}" class="button button--primary" style="margin-top: 16px;">
+          {{ 'general.continue_shopping' | t }}
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+{%- endpaginate -%}
+
+{% schema %}
+{
+  "name": "Collection Grid",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 8,
+      "max": 36,
+      "step": 4,
+      "default": 16,
+      "label": "Products per page"
+    }
+  ]
+}
+{% endschema %}

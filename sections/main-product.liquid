@@ -1,0 +1,113 @@
+<section class="product-template" data-section-id="{{ section.id }}">
+  <div class="container">
+    <div class="product-template__grid">
+      <!-- Media Gallery -->
+      <div class="product-gallery">
+        {%- if product.featured_image != blank -%}
+          {{ product.featured_image | image_url: width: 1000 | image_tag: 
+            class: 'product-gallery__main-image',
+            alt: product.featured_image.alt | default: product.title | escape 
+          }}
+        {%- else -%}
+          <div class="product-card__placeholder" style="aspect-ratio: 1/1; border-radius: var(--border-radius);">
+            {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+          </div>
+        {%- endif -%}
+      </div>
+
+      <!-- Product Details & Form -->
+      <div class="product-info">
+        {%- if product.vendor != blank -%}
+          <p class="product-card__vendor">{{ product.vendor }}</p>
+        {%- endif -%}
+
+        <h1 class="product-info__title">{{ product.title }}</h1>
+
+        <div class="product-info__price">
+          {% render 'price', product: product %}
+        </div>
+
+        {%- form 'product', product, id: 'ProductForm', class: 'product-form' -%}
+          {%- assign current_variant = product.selected_or_first_available_variant -%}
+
+          {%- if product.has_only_default_variant -%}
+            <input type="hidden" name="id" value="{{ current_variant.id }}">
+          {%- else -%}
+            <div class="product-form__variant-selector">
+              <label for="Option-{{ section.id }}" class="product-form__label">Select Variant</label>
+              <select name="id" id="Option-{{ section.id }}" class="product-form__select" data-variant-select>
+                {%- for variant in product.variants -%}
+                  <option 
+                    value="{{ variant.id }}"
+                    {% if variant == current_variant %}selected="selected"{% endif %}
+                    {% unless variant.available %}disabled="disabled"{% endunless %}
+                    data-price="{{ variant.price | money }}"
+                    data-available="{{ variant.available }}"
+                  >
+                    {{ variant.title }} - {{ variant.price | money }} {% unless variant.available %}({{ 'sections.product.sold_out' | t }}){% endunless %}
+                  </option>
+                {%- endfor -%}
+              </select>
+            </div>
+          {%- endif -%}
+
+          <div class="product-form__quantity-wrapper">
+            <label for="Quantity-{{ section.id }}" class="product-form__label">{{ 'sections.product.quantity' | t }}</label>
+            <input 
+              type="number" 
+              name="quantity" 
+              id="Quantity-{{ section.id }}" 
+              class="product-form__quantity-input" 
+              value="1" 
+              min="1"
+            >
+          </div>
+
+          <div style="margin-top: 24px;">
+            <button 
+              type="submit" 
+              name="add" 
+              class="button button--primary button--full" 
+              data-add-to-cart
+              data-text-add="{{ 'sections.product.add_to_cart' | t }}"
+              data-text-sold-out="{{ 'sections.product.sold_out' | t }}"
+              {% unless current_variant.available %}disabled="disabled"{% endunless %}
+            >
+              {%- if current_variant.available -%}
+                {{ 'sections.product.add_to_cart' | t }}
+              {%- else -%}
+                {{ 'sections.product.sold_out' | t }}
+              {%- endif -%}
+            </button>
+          </div>
+
+          {%- if section.settings.show_dynamic_checkout -%}
+            <div style="margin-top: 12px;">
+              {{ form | payment_button }}
+            </div>
+          {%- endif -%}
+        {%- endform -%}
+
+        {%- if product.description != blank -%}
+          <div class="product-info__description">
+            {{ product.description }}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Product Details",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_dynamic_checkout",
+      "label": "Show dynamic checkout button (Shop Pay / Apple Pay)",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

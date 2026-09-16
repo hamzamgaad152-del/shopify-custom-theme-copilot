@@ -1,0 +1,66 @@
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <!-- Store Info Block -->
+      <div class="footer-block">
+        <h3 class="footer-block__title">{{ shop.name }}</h3>
+        <p>{{ section.settings.about_text | default: 'Welcome to our store. We provide top-quality products with exceptional customer service.' }}</p>
+      </div>
+
+      <!-- Footer Menu 1 -->
+      <div class="footer-block">
+        <h3 class="footer-block__title">{{ linklists[section.settings.footer_menu].title | default: 'Quick Links' }}</h3>
+        <ul class="footer-nav">
+          {%- for link in linklists[section.settings.footer_menu].links -%}
+            <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+          {%- else -%}
+            <li><a href="{{ routes.root_url }}">Home</a></li>
+            <li><a href="{{ routes.all_products_collection_url }}">Catalog</a></li>
+          {%- endfor -%}
+        </ul>
+      </div>
+
+      <!-- Customer Service / Policies -->
+      <div class="footer-block">
+        <h3 class="footer-block__title">Customer Care</h3>
+        <ul class="footer-nav">
+          {%- for policy in shop.policies -%}
+            {%- if policy != blank -%}
+              <li><a href="{{ policy.url }}">{{ policy.title }}</a></li>
+            {%- endif -%}
+          {%- endfor -%}
+          <li><a href="{{ routes.search_url }}">Search</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>
+        &copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. {{ 'sections.footer.copyright' | t }}
+      </div>
+      <div>
+        <small>Powered by Shopify</small>
+      </div>
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "about_text",
+      "label": "About store description",
+      "default": "Welcome to our store. We provide top-quality products with exceptional customer service."
+    },
+    {
+      "type": "link_list",
+      "id": "footer_menu",
+      "label": "Footer menu",
+      "default": "footer"
+    }
+  ]
+}
+{% endschema %}

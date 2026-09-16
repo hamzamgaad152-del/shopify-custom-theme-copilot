@@ -1,0 +1,27 @@
+{%- comment -%}
+  Renders a product's price, including regular and compare-at (sale) prices.
+  Usage:
+  {% render 'price', product: product %}
+{%- endcomment -%}
+
+{%- liquid
+  assign target = product.selected_or_first_available_variant | default: product
+  assign price = target.price | default: 1999
+  assign compare_at_price = target.compare_at_price
+  assign on_sale = false
+  if compare_at_price > price
+    assign on_sale = true
+  endif
+-%}
+
+<div class="price-wrapper {% if on_sale %}price--on-sale{% endif %}">
+  <span class="price-item price-item--regular">
+    {{ price | money }}
+  </span>
+  {%- if on_sale -%}
+    <span class="price-item price-item--compare">
+      {{ compare_at_price | money }}
+    </span>
+    <span class="badge badge--sale">Sale</span>
+  {%- endif -%}
+</div>

@@ -1,0 +1,76 @@
+<section class="featured-collection-section" style="padding: 60px 0;">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">
+        {{ section.settings.title | escape }}
+      </h2>
+      {%- if section.settings.show_view_all and section.settings.collection != blank -%}
+        <a href="{{ section.settings.collection.url }}" class="button button--secondary">
+          {{ 'sections.featured_collection.view_all' | t }}
+        </a>
+      {%- endif -%}
+    </div>
+
+    {%- assign collection = section.settings.collection -%}
+    <div class="product-grid">
+      {%- if collection != blank and collection.products.size > 0 -%}
+        {%- for product in collection.products limit: section.settings.products_to_show -%}
+          {% render 'product-card', product: product %}
+        {%- endfor -%}
+      {%- else -%}
+        {%- for i in (1..section.settings.products_to_show) -%}
+          <div class="product-card">
+            <div class="product-card__placeholder">
+              {{ 'product-' | append: i | placeholder_svg_tag: 'placeholder-svg' }}
+            </div>
+            <div class="product-card__content">
+              <h3 class="product-card__title">Sample Product {{ i }}</h3>
+              <div class="price-wrapper">
+                <span class="price-item price-item--regular">$19.99</span>
+              </div>
+            </div>
+          </div>
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Featured Collection",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Featured Products"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 2,
+      "max": 12,
+      "step": 2,
+      "default": 4,
+      "label": "Products to show"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "default": true,
+      "label": "Show 'View all' button"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Collection"
+    }
+  ]
+}
+{% endschema %}

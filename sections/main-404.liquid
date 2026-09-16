@@ -1,0 +1,18 @@
+<section class="page-404" style="padding: 96px 0; text-align: center;">
+  <div class="container" style="max-width: 600px;">
+    <h1 style="font-size: 3rem; font-weight: 800; margin-bottom: 16px;">{{ 'sections.404.title' | t }}</h1>
+    <p style="font-size: 1.15rem; color: var(--color-secondary); margin-bottom: 32px;">
+      {{ 'sections.404.subtext' | t }}
+    </p>
+    <a href="{{ routes.root_url }}" class="button button--primary">
+      {{ 'general.continue_shopping' | t }}
+    </a>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "404 Page",
+  "settings": []
+}
+{% endschema %}

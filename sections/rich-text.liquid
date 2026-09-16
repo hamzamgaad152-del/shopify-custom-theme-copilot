@@ -1,0 +1,58 @@
+<section class="rich-text-section">
+  <div class="container">
+    <div class="rich-text-section__inner">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="rich-text-section__title">{{ section.settings.heading | escape }}</h2>
+      {%- endif -%}
+
+      {%- if section.settings.text != blank -%}
+        <div class="rich-text-section__body">
+          {{ section.settings.text }}
+        </div>
+      {%- endif -%}
+
+      {%- if section.settings.button_label != blank and section.settings.button_link != blank -%}
+        <div style="margin-top: 24px;">
+          <a href="{{ section.settings.button_link }}" class="button button--secondary">
+            {{ section.settings.button_label | escape }}
+          </a>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Rich Text",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "About our mission"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Description",
+      "default": "<p>Share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Rich Text"
+    }
+  ]
+}
+{% endschema %}

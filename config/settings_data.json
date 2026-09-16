@@ -1,0 +1,37 @@
+{
+  "current": {
+    "color_primary": "#111827",
+    "color_secondary": "#4b5563",
+    "color_accent": "#2563eb",
+    "color_background": "#ffffff",
+    "color_surface": "#f9fafb",
+    "color_text": "#1f2937",
+    "color_border": "#e5e7eb",
+    "sections": {
+      "header": {
+        "type": "header",
+        "settings": {
+          "menu": "main-menu",
+          "enable_sticky": true
+        }
+      },
+      "footer": {
+        "type": "footer",
+        "settings": {
+          "show_payment_icons": true
+        }
+      }
+    }
+  },
+  "presets": {
+    "Default": {
+      "color_primary": "#111827",
+      "color_secondary": "#4b5563",
+      "color_accent": "#2563eb",
+      "color_background": "#ffffff",
+      "color_surface": "#f9fafb",
+      "color_text": "#1f2937",
+      "color_border": "#e5e7eb"
+    }
+  }
+}

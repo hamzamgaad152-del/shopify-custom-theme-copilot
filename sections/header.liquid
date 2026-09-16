@@ -1,0 +1,81 @@
+<header class="site-header {% if section.settings.enable_sticky %}site-header--sticky{% endif %}">
+  <div class="container">
+    <div class="header-wrapper">
+      <!-- Mobile menu button -->
+      <button class="mobile-nav-toggle" aria-expanded="false" aria-label="Toggle navigation menu">
+        {% render 'icon', name: 'menu' %}
+      </button>
+
+      <!-- Store Logo / Title -->
+      <div class="header__logo">
+        <a href="{{ routes.root_url }}">
+          {%- if section.settings.logo != blank -%}
+            {{ section.settings.logo | image_url: width: 300 | image_tag: 
+              class: 'header__logo-img', 
+              alt: shop.name 
+            }}
+          {%- else -%}
+            <span>{{ shop.name }}</span>
+          {%- endif -%}
+        </a>
+      </div>
+
+      <!-- Desktop Navigation -->
+      <nav class="header__nav" aria-label="{{ 'header.navigation' | t }}">
+        {%- for link in linklists[section.settings.menu].links -%}
+          <a href="{{ link.url }}" class="nav-link {% if link.active %}nav-link--active{% endif %}">
+            {{ link.title }}
+          </a>
+        {%- endfor -%}
+      </nav>
+
+      <!-- Header Actions (Search & Cart) -->
+      <div class="header__actions">
+        <a href="{{ routes.search_url }}" class="header__action-btn" aria-label="{{ 'general.search' | t }}">
+          {% render 'icon', name: 'search' %}
+        </a>
+
+        <a href="{{ routes.cart_url }}" class="header__action-btn" aria-label="{{ 'general.cart' | t }}">
+          {% render 'icon', name: 'cart' %}
+          {%- if cart.item_count > 0 -%}
+            <span class="cart-count">{{ cart.item_count }}</span>
+          {%- endif -%}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Navigation Drawer -->
+  <div class="mobile-nav-drawer" id="MobileNavDrawer">
+    {%- for link in linklists[section.settings.menu].links -%}
+      <a href="{{ link.url }}" class="mobile-nav-link">
+        {{ link.title }}
+      </a>
+    {%- endfor -%}
+  </div>
+</header>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sticky",
+      "label": "Enable sticky header",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

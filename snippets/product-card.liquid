@@ -1,0 +1,35 @@
+{%- comment -%}
+  Renders a product card for collection grids and search results.
+  Usage:
+  {% render 'product-card', product: product %}
+{%- endcomment -%}
+
+<div class="product-card">
+  <a href="{{ product.url }}" class="product-card__image-link">
+    {%- if product.featured_image != blank -%}
+      <div class="product-card__media">
+        {{ product.featured_image | image_url: width: 600 | image_tag: 
+          loading: 'lazy', 
+          class: 'product-card__image',
+          alt: product.featured_image.alt | default: product.title | escape 
+        }}
+      </div>
+    {%- else -%}
+      <div class="product-card__placeholder">
+        {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+      </div>
+    {%- endif -%}
+  </a>
+
+  <div class="product-card__content">
+    {%- if product.vendor != blank -%}
+      <span class="product-card__vendor">{{ product.vendor }}</span>
+    {%- endif -%}
+
+    <h3 class="product-card__title">
+      <a href="{{ product.url }}">{{ product.title }}</a>
+    </h3>
+
+    {% render 'price', product: product %}
+  </div>
+</div>
