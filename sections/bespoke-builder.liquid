@@ -1,0 +1,161 @@
+<section class="bespoke-builder" data-bespoke-builder>
+  <div class="container">
+    <div class="builder-hero reveal">
+      <p class="eyebrow">Sur-mesure</p>
+      <h1>Donnez-nous les mesures. Nous faisons le reste.</h1>
+      <p>Six faces, dix finitions, une pièce unique. Fabriquée à la main en France.</p>
+    </div>
+
+    <div class="builder-shell reveal">
+      <aside class="builder-preview">
+        <div class="builder-preview__frame">
+          <div class="builder-case" id="builderCase" aria-live="polite">
+            <div class="builder-face builder-face--base" data-panel-face="base"></div>
+            <div class="builder-face builder-face--back" data-panel-face="back"></div>
+            <div class="builder-face builder-face--top" data-panel-face="top"></div>
+            <div class="builder-face builder-face--left" data-panel-face="left"></div>
+            <div class="builder-face builder-face--right" data-panel-face="right"></div>
+            <div class="builder-face builder-face--front" data-panel-face="front"></div>
+          </div>
+        </div>
+        <div class="builder-preview__meta">
+          <span>Largeur {{ settings.width | default: 28 }} cm</span>
+          <span>Profondeur {{ settings.depth | default: 18 }} cm</span>
+          <span>Hauteur {{ settings.height | default: 22 }} cm</span>
+        </div>
+      </aside>
+
+      <div class="builder-main">
+        <div class="builder-progress" aria-label="Progression du devis">
+          <span class="builder-progress__bar" id="builderProgressBar"></span>
+        </div>
+
+        <form class="builder-form" id="bespokeForm" novalidate>
+          <div class="builder-step is-active" data-step="0">
+            <h2>Étape 1 · L'objet</h2>
+            <label class="field-label" for="objectName">Nom de la pièce</label>
+            <input id="objectName" name="object" type="text" placeholder="Une 911 en Lego, les crampons de mon père..." value="">
+            <label class="field-label" for="objectImage">Photo de référence (optionnel)</label>
+            <input id="objectImage" type="file" accept="image/*">
+            <div class="builder-actions">
+              <button type="button" class="button button--primary next-step">Commencer</button>
+            </div>
+          </div>
+
+          <div class="builder-step" data-step="1">
+            <h2>Étape 2 · Les dimensions</h2>
+            <div class="dimension-grid">
+              <div class="dimension-field">
+                <label for="widthInput">Largeur</label>
+                <div class="stepper">
+                  <button type="button" class="stepper-btn" data-action="decrease" data-target="width">−</button>
+                  <input id="widthInput" name="width" type="number" min="5" max="120" step="0.5" value="28">
+                  <button type="button" class="stepper-btn" data-action="increase" data-target="width">+</button>
+                </div>
+              </div>
+              <div class="dimension-field">
+                <label for="depthInput">Profondeur</label>
+                <div class="stepper">
+                  <button type="button" class="stepper-btn" data-action="decrease" data-target="depth">−</button>
+                  <input id="depthInput" name="depth" type="number" min="5" max="120" step="0.5" value="18">
+                  <button type="button" class="stepper-btn" data-action="increase" data-target="depth">+</button>
+                </div>
+              </div>
+              <div class="dimension-field">
+                <label for="heightInput">Hauteur</label>
+                <div class="stepper">
+                  <button type="button" class="stepper-btn" data-action="decrease" data-target="height">−</button>
+                  <input id="heightInput" name="height" type="number" min="5" max="120" step="0.5" value="22">
+                  <button type="button" class="stepper-btn" data-action="increase" data-target="height">+</button>
+                </div>
+              </div>
+            </div>
+            <p class="helper-text">Ajoutez 1 à 2 cm sur chaque dimension par rapport à votre pièce pour respirer.</p>
+            <div class="builder-actions">
+              <button type="button" class="button button--secondary prev-step">Retour</button>
+              <button type="button" class="button button--primary next-step">Suivant</button>
+            </div>
+          </div>
+
+          <div class="builder-step" data-step="2">
+            <h2>Étape 3 · Les panneaux</h2>
+            <div class="panel-selector">
+              {% assign panel_names = 'Socle,Fond,Dessus,Côté gauche,Côté droit,Face avant' | split: ',' %}
+              {% for panel in panel_names %}
+                <div class="panel-row">
+                  <label>{{ panel }}</label>
+                  <div class="swatch-row" data-panel-group="{{ panel | handle }}">
+                    {% assign colors = 'Clear,Noir profond,Fumé,Blanc opale,Bleu nuit,Rouge carmin,Vert racing,Or miroir,Argent miroir' | split: ',' %}
+                    {% for color in colors %}
+                      <label class="swatch-option">
+                        <input type="radio" name="panel_{{ panel | handle }}" value="{{ color | handleize }}" {% if forloop.first %}checked{% endif %}>
+                        <span class="swatch" data-color="{{ color | handleize }}" title="{{ color }}"></span>
+                      </label>
+                    {% endfor %}
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+            <div class="builder-actions">
+              <button type="button" class="button button--secondary prev-step">Retour</button>
+              <button type="button" class="button button--primary next-step">Suivant</button>
+            </div>
+          </div>
+
+          <div class="builder-step" data-step="3">
+            <h2>Étape 4 · Les finitions</h2>
+            <div class="finish-grid">
+              <label class="check-item"><input type="checkbox" name="engraving" value="engraving"> Plaque gravée</label>
+              <label class="check-item"><input type="checkbox" name="led" value="led"> Éclairage LED intégré</label>
+              <label class="check-item"><input type="checkbox" name="raised" value="raised"> Socle surélevé</label>
+              <label class="check-item"><input type="checkbox" name="rotating" value="rotating"> Base rotative</label>
+            </div>
+            <label class="field-label" for="engravingText">Gravure</label>
+            <input id="engravingText" name="engravingText" type="text" maxlength="40" placeholder="NOM / date / message">
+            <div class="builder-actions">
+              <button type="button" class="button button--secondary prev-step">Retour</button>
+              <button type="button" class="button button--primary next-step">Suivant</button>
+            </div>
+          </div>
+
+          <div class="builder-step" data-step="4">
+            <h2>Étape 5 · Récapitulatif</h2>
+            <div class="summary-box">
+              <div>
+                <span class="muted">Objet</span>
+                <strong id="summaryObject">—</strong>
+              </div>
+              <div>
+                <span class="muted">Dimensions</span>
+                <strong id="summaryDimensions">—</strong>
+              </div>
+              <div>
+                <span class="muted">Panneaux</span>
+                <strong id="summaryPanels">—</strong>
+              </div>
+              <div>
+                <span class="muted">Options</span>
+                <strong id="summaryOptions">—</strong>
+              </div>
+            </div>
+            <div class="builder-actions">
+              <button type="button" class="button button--secondary prev-step">Retour</button>
+              <button type="button" class="button button--primary" id="copyLinkButton">Copier le lien de ma configuration</button>
+            </div>
+            <div class="builder-actions builder-actions--stacked">
+              <button type="submit" class="button button--primary" id="addToCartButton">Ajouter au panier</button>
+            </div>
+            <p class="success-note" id="builderNotice" aria-live="polite"></p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Bespoke builder",
+  "settings": []
+}
+{% endschema %}
