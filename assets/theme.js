@@ -81,6 +81,32 @@ function initScrollCue() {
   window.addEventListener('scroll', hideCue, { once: true });
 }
 
+function initCatalogTabs() {
+  const tabSection = document.querySelector('[data-catalogue-tabs]');
+  if (!tabSection) return;
+
+  const buttons = Array.from(tabSection.querySelectorAll('[data-tab-button]'));
+  const panels = Array.from(tabSection.querySelectorAll('[data-tab-panel]'));
+
+  buttons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const target = button.dataset.tabButton;
+
+      buttons.forEach((btn) => {
+        const active = btn === button;
+        btn.classList.toggle('is-active', active);
+        btn.setAttribute('aria-selected', String(active));
+      });
+
+      panels.forEach((panel) => {
+        const active = panel.dataset.tabPanel === target;
+        panel.classList.toggle('is-active', active);
+        panel.hidden = !active;
+      });
+    });
+  });
+}
+
 function initBespokeBuilder() {
   const builderSection = document.querySelector('[data-bespoke-builder]');
   if (!builderSection) return;
@@ -329,6 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initVariantSelectors();
   initRevealAnimations();
   initScrollCue();
+  initCatalogTabs();
   initBespokeBuilder();
 });
 
@@ -337,5 +364,6 @@ window.EcrinluxTheme = {
   initVariantSelectors,
   initRevealAnimations,
   initScrollCue,
+  initCatalogTabs,
   initBespokeBuilder
 };

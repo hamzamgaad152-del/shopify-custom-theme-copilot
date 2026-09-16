@@ -1,32 +1,51 @@
-<section class="catalogue-split reveal">
+<section class="catalogue-split reveal" data-catalogue-tabs>
   <div class="container">
     <div class="section-header section-header--stacked">
-      <p class="eyebrow">{{ 'catalogue_split.eyebrow' | t }}</p>
-      <h2>{{ 'catalogue_split.heading' | t }}</h2>
-      <p class="section-intro">{{ 'catalogue_split.description' | t }}</p>
+      <p class="eyebrow">Choisissez votre univers</p>
+      <h2>Des modèles prêts à exposer, ou un écrin unique.</h2>
+      <p class="section-intro">Parcourez un modèle déjà référencé ou créez un écrin entièrement sur mesure pour votre pièce.</p>
     </div>
 
-    <div class="catalogue-split__grid">
-      <a class="catalogue-tile catalogue-tile--catalogue" href="{{ routes.all_products_collection_url }}">
-        <div class="catalogue-tile__content">
-          <span class="eyebrow">{{ 'catalogue_split.catalogue_label' | t }}</span>
-          <h2>{{ 'catalogue_split.catalogue_title' | t }}</h2>
-          <p>{{ 'catalogue_split.catalogue_text' | t }}</p>
-        </div>
-      </a>
+    <div class="catalogue-tabs" role="tablist" aria-label="Choix de catalogue">
+      <button class="catalogue-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="panel-lego" id="tab-lego" data-tab-button="lego">
+        LEGO
+      </button>
+      <button class="catalogue-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-funko" id="tab-funko" data-tab-button="funko">
+        Funko Pop
+      </button>
+    </div>
 
-      <a class="catalogue-tile catalogue-tile--custom" href="/pages/sur-mesure">
-        <div class="catalogue-tile__content">
-          <span class="eyebrow">{{ 'catalogue_split.custom_label' | t }}</span>
-          <h2>{{ 'catalogue_split.custom_title' | t }}</h2>
-          <p>{{ 'catalogue_split.custom_text' | t }}</p>
+    <div class="catalogue-panels">
+      <div class="catalogue-panel is-active" id="panel-lego" role="tabpanel" aria-labelledby="tab-lego" data-tab-panel="lego">
+        <div class="catalogue-panel__media catalogue-panel__media--lego"></div>
+        <div class="catalogue-panel__content">
+          <span class="eyebrow">LEGO</span>
+          <h3>Des écrins sculptés pour les constructions qui demandent le respect.</h3>
+          <p>Pour les Porsche 911 RSR, les kits premium, les modèles légendaires et les pièces de collection qui ne doivent pas tomber dans l’oubli.</p>
+          <div class="catalogue-panel__actions">
+            <a class="button button--primary" href="/collections/lego">Voir la collection LEGO</a>
+            <a class="button button--secondary" href="/pages/sur-mesure">Créer un écrin sur mesure</a>
+          </div>
         </div>
-      </a>
+      </div>
+
+      <div class="catalogue-panel" id="panel-funko" role="tabpanel" aria-labelledby="tab-funko" data-tab-panel="funko" hidden>
+        <div class="catalogue-panel__media catalogue-panel__media--funko"></div>
+        <div class="catalogue-panel__content">
+          <span class="eyebrow">Funko Pop</span>
+          <h3>Des vitrines qui respectent chaque figurine, chaque chasse, chaque histoire.</h3>
+          <p>Pour les éditions rares, les séries limitées, les personnages cultes et les pièces que l’on garde devant soi comme un objet de mémoire.</p>
+          <div class="catalogue-panel__actions">
+            <a class="button button--primary" href="/collections/funko-pop">Voir la collection Funko Pop</a>
+            <a class="button button--secondary" href="/pages/sur-mesure">Créer un écrin sur mesure</a>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="catalogue-search">
-      <label for="catalogue-search-field" class="visually-hidden">{{ 'catalogue_split.search_label' | t }}</label>
-      <input id="catalogue-search-field" type="search" placeholder="{{ 'catalogue_split.search_placeholder' | t }}" data-predictive-search>
+      <label for="catalogue-search-field" class="visually-hidden">Recherche</label>
+      <input id="catalogue-search-field" type="search" placeholder="Cherchez votre référence (ex. 42096, Porsche, Batman…)" data-predictive-search>
     </div>
   </div>
 </section>
