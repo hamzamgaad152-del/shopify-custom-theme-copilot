@@ -1,22 +1,32 @@
 <section class="catalogue-split reveal">
   <div class="container">
+    <div class="section-header section-header--stacked">
+      <p class="eyebrow">{{ 'catalogue_split.eyebrow' | t }}</p>
+      <h2>{{ 'catalogue_split.heading' | t }}</h2>
+      <p class="section-intro">{{ 'catalogue_split.description' | t }}</p>
+    </div>
+
     <div class="catalogue-split__grid">
-      <a class="catalogue-tile catalogue-tile--lego" href="{{ routes.all_products_collection_url }}?collection=lego">
+      <a class="catalogue-tile catalogue-tile--catalogue" href="{{ routes.all_products_collection_url }}">
         <div class="catalogue-tile__content">
-          <span class="eyebrow">LEGO</span>
-          <h2>Vos constructions, exposées.</h2>
+          <span class="eyebrow">{{ 'catalogue_split.catalogue_label' | t }}</span>
+          <h2>{{ 'catalogue_split.catalogue_title' | t }}</h2>
+          <p>{{ 'catalogue_split.catalogue_text' | t }}</p>
         </div>
       </a>
-      <a class="catalogue-tile catalogue-tile--funko" href="{{ routes.all_products_collection_url }}?collection=funko-pop">
+
+      <a class="catalogue-tile catalogue-tile--custom" href="/pages/sur-mesure">
         <div class="catalogue-tile__content">
-          <span class="eyebrow">FUNKO POP</span>
-          <h2>Vos figurines, en vitrine.</h2>
+          <span class="eyebrow">{{ 'catalogue_split.custom_label' | t }}</span>
+          <h2>{{ 'catalogue_split.custom_title' | t }}</h2>
+          <p>{{ 'catalogue_split.custom_text' | t }}</p>
         </div>
       </a>
     </div>
+
     <div class="catalogue-search">
-      <label for="catalogue-search-field" class="visually-hidden">Recherche</label>
-      <input id="catalogue-search-field" type="search" placeholder="Cherchez votre référence (ex. 42096, Porsche, Batman…)" data-predictive-search>
+      <label for="catalogue-search-field" class="visually-hidden">{{ 'catalogue_split.search_label' | t }}</label>
+      <input id="catalogue-search-field" type="search" placeholder="{{ 'catalogue_split.search_placeholder' | t }}" data-predictive-search>
     </div>
   </div>
 </section>

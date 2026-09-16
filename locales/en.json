@@ -9,6 +9,72 @@
     "brand": {
       "name": "ECRINLUX",
       "domain": "ecrinlux.fr"
+    },
+    "search": "Search",
+    "close": "Close",
+    "menu": "Menu",
+    "cart": "Cart",
+    "continue_shopping": "Continue shopping",
+    "error": "Error"
+  },
+  "header": {
+    "navigation": "Main navigation",
+    "search_placeholder": "Search our store..."
+  },
+  "catalogue_split": {
+    "eyebrow": "Choose your path",
+    "heading": "Looking for the right fit?",
+    "description": "Browse the available collection or create a completely bespoke display case.",
+    "catalogue_label": "Catalogue",
+    "catalogue_title": "Available catalogue",
+    "catalogue_text": "Find a model already listed and ready for presentation.",
+    "custom_label": "Bespoke",
+    "custom_title": "Create my case",
+    "custom_text": "Set your dimensions, panels, and story with our atelier.",
+    "search_label": "Search",
+    "search_placeholder": "Search a model (e.g. 42096, Porsche, Batman...)"
+  },
+  "search": {
+    "empty_title": "No results for",
+    "custom_eyebrow": "Model not found",
+    "custom_title": "Could not find your piece?",
+    "custom_text": "No problem. Tell us what you want to protect and we will create a custom display case.",
+    "custom_cta": "Create my custom case"
+  },
+  "sections": {
+    "cart": {
+      "title": "Your cart",
+      "empty": "Your cart is currently empty.",
+      "checkout": "Check out",
+      "update": "Update",
+      "subtotal": "Subtotal",
+      "quantity": "Quantity",
+      "remove": "Remove",
+      "taxes_and_shipping_policy_at_checkout_html": "Taxes and shipping calculated at checkout"
+    },
+    "featured_collection": {
+      "view_all": "View all products"
+    },
+    "collection": {
+      "empty": "No products found in this collection.",
+      "sort_by": "Sort by",
+      "filter_by": "Filter by"
+    },
+    "product": {
+      "add_to_cart": "Add to cart",
+      "sold_out": "Sold out",
+      "unavailable": "Unavailable",
+      "quantity": "Quantity",
+      "price": "Price",
+      "regular_price": "Regular price",
+      "sale_price": "Sale price"
+    },
+    "footer": {
+      "copyright": "All rights reserved."
+    },
+    "404": {
+      "title": "Page not found",
+      "subtext": "The page you were looking for does not exist."
     }
   },
   "customer": {

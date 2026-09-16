@@ -9,6 +9,72 @@
     "brand": {
       "name": "ECRINLUX",
       "domain": "ecrinlux.fr"
+    },
+    "search": "Rechercher",
+    "close": "Fermer",
+    "menu": "Menu",
+    "cart": "Panier",
+    "continue_shopping": "Continuer les achats",
+    "error": "Erreur"
+  },
+  "header": {
+    "navigation": "Navigation principale",
+    "search_placeholder": "Rechercher dans notre boutique..."
+  },
+  "catalogue_split": {
+    "eyebrow": "Choisir votre chemin",
+    "heading": "Vous cherchez la bonne solution ?",
+    "description": "Parcourez la collection disponible ou créez un écrin entièrement sur mesure.",
+    "catalogue_label": "Catalogue",
+    "catalogue_title": "Catalogue disponible",
+    "catalogue_text": "Trouver un modèle déjà référencé et prêt à être mis sous verre.",
+    "custom_label": "Sur mesure",
+    "custom_title": "Créer mon écrin",
+    "custom_text": "Définissez vos dimensions, vos panneaux et votre histoire.",
+    "search_label": "Recherche",
+    "search_placeholder": "Cherchez votre modèle (ex. 42096, Porsche, Batman...)"
+  },
+  "search": {
+    "empty_title": "Aucun résultat pour",
+    "custom_eyebrow": "Modèle introuvable",
+    "custom_title": "Vous n'avez pas trouvé votre pièce ?",
+    "custom_text": "Pas de souci. Dites-nous ce que vous souhaitez protéger et nous créons un écrin sur mesure.",
+    "custom_cta": "Créer mon écrin sur mesure"
+  },
+  "sections": {
+    "cart": {
+      "title": "Votre panier",
+      "empty": "Votre panier est vide pour le moment.",
+      "checkout": "Commander",
+      "update": "Mettre à jour",
+      "subtotal": "Sous-total",
+      "quantity": "Quantité",
+      "remove": "Retirer",
+      "taxes_and_shipping_policy_at_checkout_html": "Taxes et frais de livraison calculés à la caisse"
+    },
+    "featured_collection": {
+      "view_all": "Voir tous les produits"
+    },
+    "collection": {
+      "empty": "Aucun produit trouvé dans cette collection.",
+      "sort_by": "Trier par",
+      "filter_by": "Filtrer par"
+    },
+    "product": {
+      "add_to_cart": "Ajouter au panier",
+      "sold_out": "Épuisé",
+      "unavailable": "Indisponible",
+      "quantity": "Quantité",
+      "price": "Prix",
+      "regular_price": "Prix habituel",
+      "sale_price": "Prix soldé"
+    },
+    "footer": {
+      "copyright": "Tous droits réservés."
+    },
+    "404": {
+      "title": "Page introuvable",
+      "subtext": "La page que vous cherchez n'existe pas."
     }
   },
   "customer": {

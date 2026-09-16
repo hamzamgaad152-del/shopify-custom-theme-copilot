@@ -3,12 +3,7 @@
  * Lightweight, vanilla JavaScript for responsive navigation, product forms, and interactions.
  */
 
-document.addEventListener('DOMContentLoaded', () => {
-  initMobileNav();
-  initVariantSelectors();
-  initRevealAnimations();
-  initScrollCue();
-});
+window.EcrinluxTheme = window.EcrinluxTheme || {};
 
 function initMobileNav() {
   const toggleBtn = document.querySelector('.mobile-nav-toggle');
@@ -336,3 +331,11 @@ document.addEventListener('DOMContentLoaded', () => {
   initScrollCue();
   initBespokeBuilder();
 });
+
+window.EcrinluxTheme = {
+  initMobileNav,
+  initVariantSelectors,
+  initRevealAnimations,
+  initScrollCue,
+  initBespokeBuilder
+};

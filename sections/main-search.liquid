@@ -44,7 +44,14 @@
         </div>
       {%- else -%}
         <div style="text-align: center; padding: 40px 0;">
-          <p style="font-size: 1.15rem; color: var(--color-secondary);">No results found for "{{ search.terms | escape }}".</p>
+          <p style="font-size: 1.15rem; color: var(--color-secondary);">{{ 'search.empty_title' | t }} "{{ search.terms | escape }}"</p>
+
+          <div class="custom-choice-card" style="max-width: 680px; margin: 2rem auto 0; padding: 2rem; border: 1px solid var(--color-border); background: rgba(255,255,255,0.02);">
+            <p class="eyebrow">{{ 'search.custom_eyebrow' | t }}</p>
+            <h2 style="margin: 0 0 0.75rem; font-size: clamp(2rem, 3vw, 3rem);">{{ 'search.custom_title' | t }}</h2>
+            <p style="margin: 0 0 1.5rem; color: rgba(242,243,244,0.8);">{{ 'search.custom_text' | t }}</p>
+            <a class="button button--primary" href="/pages/sur-mesure">{{ 'search.custom_cta' | t }}</a>
+          </div>
         </div>
       {%- endif -%}
     {%- endif -%}
