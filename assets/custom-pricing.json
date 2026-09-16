@@ -1,0 +1,87 @@
+{
+  "baseRate": 0.0025,
+  "metalCorners": 9.99,
+  "panelCosts": {
+    "transparent": {
+      "base": 0,
+      "front": 0,
+      "back": 0,
+      "left": 0,
+      "right": 0,
+      "top": 0,
+      "bottom": 0
+    },
+    "noir-profond": {
+      "base": 5,
+      "front": 5,
+      "back": 5,
+      "left": 5,
+      "right": 5,
+      "top": 5,
+      "bottom": 5
+    },
+    "fume": {
+      "base": 5,
+      "front": 5,
+      "back": 5,
+      "left": 5,
+      "right": 5,
+      "top": 5,
+      "bottom": 5
+    },
+    "blanc-opale": {
+      "base": 5,
+      "front": 5,
+      "back": 5,
+      "left": 5,
+      "right": 5,
+      "top": 5,
+      "bottom": 5
+    },
+    "bleu-nuit": {
+      "base": 5,
+      "front": 5,
+      "back": 5,
+      "left": 5,
+      "right": 5,
+      "top": 5,
+      "bottom": 5
+    },
+    "rouge-carmin": {
+      "base": 5,
+      "front": 5,
+      "back": 5,
+      "left": 5,
+      "right": 5,
+      "top": 5,
+      "bottom": 5
+    },
+    "vert-racing": {
+      "base": 5,
+      "front": 5,
+      "back": 5,
+      "left": 5,
+      "right": 5,
+      "top": 5,
+      "bottom": 5
+    },
+    "or-miroir": {
+      "base": 5,
+      "front": 5,
+      "back": 5,
+      "left": 5,
+      "right": 5,
+      "top": 5,
+      "bottom": 5
+    },
+    "argent-miroir": {
+      "base": 5,
+      "front": 5,
+      "back": 5,
+      "left": 5,
+      "right": 5,
+      "top": 5,
+      "bottom": 5
+    }
+  }
+}

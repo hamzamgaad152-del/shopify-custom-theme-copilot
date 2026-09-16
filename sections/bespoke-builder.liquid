@@ -1,4 +1,4 @@
-<section class="bespoke-builder" data-bespoke-builder>
+<section class="bespoke-builder" data-bespoke-builder data-pricing-url="{{ 'custom-pricing.json' | asset_url }}" data-custom-product-id="{{ section.settings.custom_case_product.id | default: section.settings.custom_case_product | default: 0 }}">
   <div class="container">
     <div class="builder-hero reveal">
       <div class="builder-hero__badge">Custom Case Design</div>
@@ -9,19 +9,19 @@
     <div class="builder-shell reveal">
       <aside class="builder-preview">
         <div class="builder-preview__frame">
-          <div class="builder-case" id="builderCase" aria-live="polite">
-            <div class="builder-face builder-face--base" data-panel-face="base"></div>
-            <div class="builder-face builder-face--back" data-panel-face="back"></div>
-            <div class="builder-face builder-face--top" data-panel-face="top"></div>
-            <div class="builder-face builder-face--left" data-panel-face="left"></div>
-            <div class="builder-face builder-face--right" data-panel-face="right"></div>
-            <div class="builder-face builder-face--front" data-panel-face="front"></div>
+          <div class="builder-case" id="builderCase" aria-live="polite" aria-label="Prévisualisation du coffret sur mesure">
+            <div class="builder-face builder-face--base" data-panel-face="base" data-face-label="Socle"></div>
+            <div class="builder-face builder-face--back" data-panel-face="back" data-face-label="Fond"></div>
+            <div class="builder-face builder-face--top" data-panel-face="top" data-face-label="Dessus"></div>
+            <div class="builder-face builder-face--left" data-panel-face="left" data-face-label="Côté gauche"></div>
+            <div class="builder-face builder-face--right" data-panel-face="right" data-face-label="Côté droit"></div>
+            <div class="builder-face builder-face--front" data-panel-face="front" data-face-label="Face avant"></div>
           </div>
         </div>
         <div class="builder-preview__meta">
-          <span>Largeur {{ settings.width | default: 28 }} cm</span>
-          <span>Profondeur {{ settings.depth | default: 18 }} cm</span>
-          <span>Hauteur {{ settings.height | default: 22 }} cm</span>
+          <span>Largeur <strong id="previewWidth">20</strong> cm</span>
+          <span>Profondeur <strong id="previewDepth">16</strong> cm</span>
+          <span>Hauteur <strong id="previewHeight">20</strong> cm</span>
         </div>
       </aside>
 
@@ -35,6 +35,7 @@
             <h2>Étape 1 · L'objet</h2>
             <label class="field-label" for="objectName">Nom de la pièce</label>
             <input id="objectName" name="object" type="text" placeholder="Une 911 en Lego, les crampons de mon père..." value="">
+            <div class="builder-price" id="builderPriceEstimate">Estimation : 0,00 €</div>
             <div class="builder-actions">
               <button type="button" class="button button--primary next-step">Commencer</button>
             </div>
@@ -47,7 +48,7 @@
                 <label for="widthInput">Largeur</label>
                 <div class="stepper">
                   <button type="button" class="stepper-btn" data-action="decrease" data-target="width">−</button>
-                  <input id="widthInput" name="width" type="number" min="5" max="120" step="0.5" value="28">
+                  <input id="widthInput" name="width" type="number" min="20" max="40" step="1" value="20">
                   <button type="button" class="stepper-btn" data-action="increase" data-target="width">+</button>
                 </div>
               </div>
@@ -55,7 +56,7 @@
                 <label for="depthInput">Profondeur</label>
                 <div class="stepper">
                   <button type="button" class="stepper-btn" data-action="decrease" data-target="depth">−</button>
-                  <input id="depthInput" name="depth" type="number" min="5" max="120" step="0.5" value="18">
+                  <input id="depthInput" name="depth" type="number" min="16" max="34" step="1" value="16">
                   <button type="button" class="stepper-btn" data-action="increase" data-target="depth">+</button>
                 </div>
               </div>
@@ -63,12 +64,12 @@
                 <label for="heightInput">Hauteur</label>
                 <div class="stepper">
                   <button type="button" class="stepper-btn" data-action="decrease" data-target="height">−</button>
-                  <input id="heightInput" name="height" type="number" min="5" max="120" step="0.5" value="22">
+                  <input id="heightInput" name="height" type="number" min="20" max="40" step="1" value="20">
                   <button type="button" class="stepper-btn" data-action="increase" data-target="height">+</button>
                 </div>
               </div>
             </div>
-            <p class="helper-text">Ajoutez 1 à 2 cm sur chaque dimension par rapport à votre pièce pour respirer.</p>
+            <p class="helper-text">Le prix est calculé à partir du volume total, avec un surcoût de 5 € pour chaque panneau personnalisé.</p>
             <div class="builder-actions">
               <button type="button" class="button button--secondary prev-step">Retour</button>
               <button type="button" class="button button--primary next-step">Suivant</button>
@@ -83,7 +84,7 @@
                 <div class="panel-row">
                   <label>{{ panel }}</label>
                   <div class="swatch-row" data-panel-group="{{ panel | handle }}">
-                    {% assign colors = 'Clear,Noir profond,Fumé,Blanc opale,Bleu nuit,Rouge carmin,Vert racing,Or miroir,Argent miroir' | split: ',' %}
+                    {% assign colors = 'Transparent,Noir profond,Fumé,Blanc opale,Bleu nuit,Rouge carmin,Vert racing,Or miroir,Argent miroir' | split: ',' %}
                     {% for color in colors %}
                       <label class="swatch-option">
                         <input type="radio" name="panel_{{ panel | handle }}" value="{{ color | handleize }}" {% if forloop.first %}checked{% endif %}>
@@ -101,15 +102,19 @@
           </div>
 
           <div class="builder-step" data-step="3">
-            <h2>Étape 4 · Les finitions</h2>
-            <div class="finish-grid">
-              <label class="check-item"><input type="checkbox" name="engraving" value="engraving"> Plaque gravée</label>
-              <label class="check-item"><input type="checkbox" name="led" value="led"> Éclairage LED intégré</label>
-              <label class="check-item"><input type="checkbox" name="raised" value="raised"> Socle surélevé</label>
-              <label class="check-item"><input type="checkbox" name="rotating" value="rotating"> Base rotative</label>
+            <h2>Étape 4 · Les coins</h2>
+            <div class="corner-selector">
+              <label class="corner-option">
+                <input type="radio" name="corner_type" value="plastic" checked>
+                <span>Coins en plexiglass + vis transparentes</span>
+                <small>Standard · 0,00 €</small>
+              </label>
+              <label class="corner-option">
+                <input type="radio" name="corner_type" value="metal">
+                <span>Coins métalliques premium</span>
+                <small>+ 9,99 €</small>
+              </label>
             </div>
-            <label class="field-label" for="engravingText">Gravure</label>
-            <input id="engravingText" name="engravingText" type="text" maxlength="40" placeholder="NOM / date / message">
             <div class="builder-actions">
               <button type="button" class="button button--secondary prev-step">Retour</button>
               <button type="button" class="button button--primary next-step">Suivant</button>
@@ -132,8 +137,12 @@
                 <strong id="summaryPanels">—</strong>
               </div>
               <div>
-                <span class="muted">Options</span>
+                <span class="muted">Coins</span>
                 <strong id="summaryOptions">—</strong>
+              </div>
+              <div>
+                <span class="muted">Prix estimé</span>
+                <strong id="summaryPrice">0,00 €</strong>
               </div>
             </div>
             <div class="builder-actions">
@@ -154,6 +163,12 @@
 {% schema %}
 {
   "name": "Bespoke builder",
-  "settings": []
+  "settings": [
+    {
+      "type": "product",
+      "id": "custom_case_product",
+      "label": "Produit personnalisé à ajouter au panier"
+    }
+  ]
 }
 {% endschema %}

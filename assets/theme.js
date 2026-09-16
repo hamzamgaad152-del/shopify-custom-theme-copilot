@@ -115,17 +115,40 @@ function initBespokeBuilder() {
   const steps = Array.from(builderSection.querySelectorAll('.builder-step'));
   const progressBar = builderSection.querySelector('#builderProgressBar');
   const caseElement = builderSection.querySelector('#builderCase');
+  const previewFrame = builderSection.querySelector('.builder-preview__frame');
   const notice = builderSection.querySelector('#builderNotice');
   const copyLinkButton = builderSection.querySelector('#copyLinkButton');
   const addToCartButton = builderSection.querySelector('#addToCartButton');
+  const pricingUrl = builderSection.dataset.pricingUrl || '';
+  const pricingFallback = {
+    baseRate: 0.0025,
+    metalCorners: 9.99,
+    panelCosts: {
+      transparent: 0,
+      "noir-profond": 5,
+      "fume": 5,
+      "blanc-opale": 5,
+      "bleu-nuit": 5,
+      "rouge-carmin": 5,
+      "vert-racing": 5,
+      "or-miroir": 5,
+      "argent-miroir": 5
+    }
+  };
+  let customPricing = pricingFallback;
+  let manualRotation = { x: 0, y: 0 };
+  let isDragging = false;
+  let dragStartX = 0;
+  let dragStartY = 0;
 
   const defaultState = {
     step: 0,
     object: '',
-    width: 28,
-    depth: 18,
-    height: 22,
-    panels: { base: 'clear', back: 'clear', top: 'clear', left: 'clear', right: 'clear', front: 'clear' },
+    width: 20,
+    depth: 16,
+    height: 20,
+    panels: { base: 'transparent', back: 'transparent', top: 'transparent', left: 'transparent', right: 'transparent', front: 'transparent' },
+    cornerType: 'plastic',
     engraving: false,
     led: false,
     raised: false,
@@ -143,6 +166,7 @@ function initBespokeBuilder() {
       width: Number(params.get('width')) || Number(saved.width) || defaultState.width,
       depth: Number(params.get('depth')) || Number(saved.depth) || defaultState.depth,
       height: Number(params.get('height')) || Number(saved.height) || defaultState.height,
+      cornerType: params.get('corner') || saved.cornerType || defaultState.cornerType,
       engravingText: params.get('engraving') || saved.engravingText || defaultState.engravingText
     };
   }
@@ -154,14 +178,29 @@ function initBespokeBuilder() {
     if (state.width) params.set('width', String(state.width));
     if (state.depth) params.set('depth', String(state.depth));
     if (state.height) params.set('height', String(state.height));
+    if (state.cornerType) params.set('corner', state.cornerType);
     if (state.engravingText) params.set('engraving', state.engravingText);
     const url = `${window.location.pathname}?${params.toString()}`;
     window.history.replaceState({}, '', url);
   }
 
+  function formatCurrency(value) {
+    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(value || 0);
+  }
+
+  function getPricing(state) {
+    const pricing = customPricing || pricingFallback;
+    const volumeCm3 = Number(state.width) * Number(state.depth) * Number(state.height);
+    const baseCost = volumeCm3 * (pricing.baseRate || pricingFallback.baseRate);
+    const panelCost = Object.values(state.panels)
+      .reduce((sum, panelColor) => sum + (pricing.panelCosts?.[panelColor] ?? pricingFallback.panelCosts[panelColor] ?? 0), 0);
+    const cornerCost = state.cornerType === 'metal' ? (pricing.metalCorners || pricingFallback.metalCorners) : 0;
+    return Number((baseCost + panelCost + cornerCost).toFixed(2));
+  }
+
   function updatePreview(state) {
     const palette = {
-      clear: 'rgba(186, 214, 255, 0.32)',
+      transparent: 'rgba(170, 214, 255, 0.22)',
       'noir-profond': '#171a1d',
       'fume': 'rgba(142, 152, 168, 0.72)',
       'blanc-opale': '#f2f3f4',
@@ -174,16 +213,44 @@ function initBespokeBuilder() {
 
     Object.entries(state.panels).forEach(([key, value]) => {
       const face = caseElement.querySelector(`[data-panel-face="${key}"]`);
-      if (face) face.style.background = palette[value] || palette.clear;
+      if (face) {
+        const isTransparent = value === 'transparent';
+        face.style.background = palette[value] || palette.transparent;
+        face.style.borderColor = isTransparent ? 'rgba(255, 255, 255, 0.32)' : 'rgba(255,255,255,0.12)';
+        face.style.boxShadow = isTransparent
+          ? 'inset 0 0 18px rgba(190,215,255,0.18), 0 0 0 1px rgba(255,255,255,0.08)'
+          : 'inset 0 0 18px rgba(255,255,255,0.08), 0 18px 28px rgba(0,0,0,0.22)';
+      }
     });
 
-    const widthPx = Math.max(120, Math.min(240, state.width * 6));
-    const depthPx = Math.max(80, Math.min(170, state.depth * 5));
-    const heightPx = Math.max(120, Math.min(240, state.height * 6));
+    const widthRatio = Math.max(0.9, Math.min(1.6, Number(state.width) / 28));
+    const depthRatio = Math.max(0.8, Math.min(1.6, Number(state.depth) / 18));
+    const heightRatio = Math.max(0.9, Math.min(1.6, Number(state.height) / 22));
+
+    const widthPx = Math.round(160 * widthRatio);
+    const depthPx = Math.round(120 * depthRatio);
+    const heightPx = Math.round(160 * heightRatio);
 
     caseElement.style.setProperty('--case-width', `${widthPx}px`);
     caseElement.style.setProperty('--case-depth', `${depthPx}px`);
     caseElement.style.setProperty('--case-height', `${heightPx}px`);
+
+    const xAngle = (manualRotation.x || 0) % 45;
+    const yAngle = (manualRotation.y || 0) % 45;
+    const clampedX = Math.min(Math.max(xAngle, -45), 45);
+    const clampedY = Math.min(Math.max(yAngle, -45), 45);
+
+    caseElement.style.transform = `rotateX(${clampedX}deg) rotateY(${clampedY}deg) scale(1.08)`;
+
+    const price = getPricing(state);
+    const priceEstimate = builderSection.querySelector('#builderPriceEstimate');
+    if (priceEstimate) priceEstimate.textContent = `Estimation : ${formatCurrency(price)}`;
+    const summaryPrice = builderSection.querySelector('#summaryPrice');
+    if (summaryPrice) summaryPrice.textContent = formatCurrency(price);
+
+    builderSection.querySelector('#previewWidth').textContent = Number(state.width).toFixed(0);
+    builderSection.querySelector('#previewDepth').textContent = Number(state.depth).toFixed(0);
+    builderSection.querySelector('#previewHeight').textContent = Number(state.height).toFixed(0);
   }
 
   function syncInputs(state) {
@@ -204,6 +271,10 @@ function initBespokeBuilder() {
     });
 
     builderSection.querySelectorAll('input[type="radio"]').forEach((input) => {
+      if (input.name === 'corner_type') {
+        input.checked = input.value === state.cornerType;
+        return;
+      }
       const panelKey = input.name.replace('panel_', '');
       if (panelKey && state.panels && state.panels[panelKey]) {
         input.checked = input.value === state.panels[panelKey];
@@ -218,13 +289,8 @@ function initBespokeBuilder() {
       .map(([key, value]) => `${key}: ${value}`)
       .join(', ');
     builderSection.querySelector('#summaryPanels').textContent = panelSummary;
-
-    const options = [];
-    if (state.engraving) options.push('gravure');
-    if (state.led) options.push('LED');
-    if (state.raised) options.push('socle');
-    if (state.rotating) options.push('rotatif');
-    builderSection.querySelector('#summaryOptions').textContent = options.length ? options.join(', ') : 'Aucune option';
+    builderSection.querySelector('#summaryOptions').textContent = state.cornerType === 'metal' ? 'Coins métalliques premium' : 'Coins plexiglass standard';
+    builderSection.querySelector('#summaryPrice').textContent = formatCurrency(getPricing(state));
   }
 
   function goToStep(stepIndex) {
@@ -244,7 +310,7 @@ function initBespokeBuilder() {
     const widthValue = Number(builderSection.querySelector('#widthInput').value || state.width);
     const depthValue = Number(builderSection.querySelector('#depthInput').value || state.depth);
     const heightValue = Number(builderSection.querySelector('#heightInput').value || state.height);
-    const engravingTextValue = builderSection.querySelector('#engravingText').value || '';
+    const engravingTextValue = builderSection.querySelector('#engravingText')?.value || '';
     const panels = {
       base: builderSection.querySelector('input[name="panel_base"]:checked')?.value || state.panels.base,
       back: builderSection.querySelector('input[name="panel_back"]:checked')?.value || state.panels.back,
@@ -254,13 +320,20 @@ function initBespokeBuilder() {
       front: builderSection.querySelector('input[name="panel_front"]:checked')?.value || state.panels.front
     };
 
+    const clamped = {
+      width: Math.min(Math.max(widthValue, 20), 40),
+      depth: Math.min(Math.max(depthValue, 16), 34),
+      height: Math.min(Math.max(heightValue, 20), 40)
+    };
+
     return {
       ...state,
       object: objectValue ? objectValue.value : state.object,
-      width: widthValue,
-      depth: depthValue,
-      height: heightValue,
+      width: clamped.width,
+      depth: clamped.depth,
+      height: clamped.height,
       engravingText: engravingTextValue,
+      cornerType: builderSection.querySelector('input[name="corner_type"]:checked')?.value || state.cornerType || 'plastic',
       engraving: builderSection.querySelector('input[name="engraving"]')?.checked || false,
       led: builderSection.querySelector('input[name="led"]')?.checked || false,
       raised: builderSection.querySelector('input[name="raised"]')?.checked || false,
@@ -301,13 +374,42 @@ function initBespokeBuilder() {
     });
   });
 
+  previewFrame.addEventListener('pointerdown', (event) => {
+    isDragging = true;
+    dragStartX = event.clientX;
+    dragStartY = event.clientY;
+    previewFrame.setPointerCapture(event.pointerId);
+  });
+
+  previewFrame.addEventListener('pointermove', (event) => {
+    if (!isDragging) return;
+    const deltaX = event.clientX - dragStartX;
+    const deltaY = event.clientY - dragStartY;
+    manualRotation.y = Math.min(Math.max((manualRotation.y || 0) + deltaX * 0.25, -45), 45);
+    manualRotation.x = Math.min(Math.max((manualRotation.x || 0) - deltaY * 0.2, -45), 45);
+    dragStartX = event.clientX;
+    dragStartY = event.clientY;
+    const state = gatherCurrentInputState();
+    updatePreview(state);
+  });
+
+  previewFrame.addEventListener('pointerup', () => {
+    isDragging = false;
+  });
+
+  previewFrame.addEventListener('pointerleave', () => {
+    isDragging = false;
+  });
+
   builderSection.querySelectorAll('.stepper-btn').forEach((button) => {
     button.addEventListener('click', () => {
       const key = button.dataset.target;
       const input = builderSection.querySelector(`#${key}Input`);
       const currentValue = Number(input.value || 0);
       const delta = button.dataset.action === 'increase' ? 1 : -1;
-      input.value = Math.min(Math.max(currentValue + delta, 5), 120);
+      const minValue = key === 'width' ? 20 : key === 'depth' ? 16 : 20;
+      const maxValue = key === 'width' ? 40 : key === 'depth' ? 34 : 40;
+      input.value = Math.min(Math.max(currentValue + delta, minValue), maxValue);
       input.dispatchEvent(new Event('input'));
     });
   });
@@ -332,7 +434,7 @@ function initBespokeBuilder() {
 
   copyLinkButton.addEventListener('click', async () => {
     const state = gatherCurrentInputState();
-    const url = `${window.location.origin}${window.location.pathname}?object=${encodeURIComponent(state.object || '')}&width=${state.width}&depth=${state.depth}&height=${state.height}`;
+    const url = `${window.location.origin}${window.location.pathname}?object=${encodeURIComponent(state.object || '')}&width=${state.width}&depth=${state.depth}&height=${state.height}&corner=${encodeURIComponent(state.cornerType || 'plastic')}`;
     try {
       await navigator.clipboard.writeText(url);
       notice.textContent = 'Lien de configuration copié.';
@@ -344,8 +446,38 @@ function initBespokeBuilder() {
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     const state = gatherCurrentInputState();
-    notice.textContent = `Votre écrin entre en atelier. ${state.object || 'Pièce'} est prêt à être préparé.`;
-    localStorage.setItem('ecrinlux-bespoke', JSON.stringify({ ...state, step: 4 }));
+    const price = getPricing(state);
+    const productId = Number(builderSection.dataset.customProductId || 0);
+    const variantId = productId ? Number(productId) : null;
+
+    notice.textContent = `Votre écrin ${state.object || 'sur mesure'} a été estimé à ${formatCurrency(price)}. ${variantId ? 'Le produit est prêt à être ajouté au panier.' : 'Configurez le produit personnalisé dans Shopify pour compléter l’ajout au panier.'}`;
+    localStorage.setItem('ecrinlux-bespoke', JSON.stringify({ ...state, step: 4, finalPrice: price }));
+
+    if (variantId && window.Shopify && window.Shopify.storefrontApi) {
+      return;
+    }
+
+    if (!variantId) {
+      return;
+    }
+
+    const cartForm = {
+      items: [{ id: variantId, quantity: 1, properties: { configuration: JSON.stringify(state) } }]
+    };
+
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(cartForm.items[0])
+    })
+      .then((response) => response.json())
+      .then(() => {
+        notice.textContent = `Votre écrin ${state.object || 'sur mesure'} a été ajouté au panier pour ${formatCurrency(price)}.`;
+        window.location.href = '/cart';
+      })
+      .catch(() => {
+        notice.textContent = `Votre écrin ${state.object || 'sur mesure'} est prêt. Configurez le produit personnalisé Shopify pour l’ajouter au panier.`;
+      });
   });
 
   applyState();
