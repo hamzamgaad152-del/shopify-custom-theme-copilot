@@ -1,5 +1,5 @@
 <!doctype html>
-<html class="no-js" lang="{{ request.locale.iso_code }}">
+<html class="no-js" lang="{{ request.locale.iso_code | default: 'fr' }}">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -46,7 +46,7 @@
 
   <body class="template-{{ template.name | handle }}">
     <a class="skip-to-content-link visually-hidden" href="#MainContent">
-      Skip to content
+      {{ 'general.accessibility.skip_to_content' | t }}
     </a>
 
     {% section 'header' %}

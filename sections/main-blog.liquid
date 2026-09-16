@@ -1,0 +1,27 @@
+<section class="section section-main-blog" data-section-id="{{ section.id }}">
+  <div class="page-width">
+    <header class="section-header">
+      <h1>{{ blog.title | escape }}</h1>
+    </header>
+
+    {% if blog.articles_count > 0 %}
+      <div class="article-grid">
+        {% for article in blog.articles %}
+          <article class="article-card">
+            <h2><a href="{{ article.url }}">{{ article.title | escape }}</a></h2>
+            <p>{{ article.excerpt_or_content | strip_html | truncate: 160 }}</p>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>{{ 'general.blog.empty' | t }}</p>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Blog",
+  "settings": []
+}
+{% endschema %}

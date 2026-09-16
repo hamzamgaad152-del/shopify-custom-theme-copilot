@@ -15,7 +15,7 @@ if (Test-Path $zipOutputPath) {
 }
 
 # Folders required by Shopify theme architecture
-$foldersToZip = @('assets', 'config', 'layout', 'locales', 'sections', 'snippets', 'templates')
+$foldersToZip = @('assets', 'blocks', 'config', 'layout', 'locales', 'sections', 'snippets', 'templates')
 
 Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem

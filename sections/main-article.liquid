@@ -1,0 +1,18 @@
+<article class="section section-main-article" data-section-id="{{ section.id }}">
+  <div class="page-width">
+    <header class="section-header">
+      <p>{{ article.published_at | time_tag: format: 'date' }}</p>
+      <h1>{{ article.title | escape }}</h1>
+    </header>
+    <div class="rte">
+      {{ article.content }}
+    </div>
+  </div>
+</article>
+
+{% schema %}
+{
+  "name": "Article",
+  "settings": []
+}
+{% endschema %}

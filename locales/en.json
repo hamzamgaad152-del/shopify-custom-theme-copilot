@@ -1,0 +1,19 @@
+{
+  "general": {
+    "accessibility": {
+      "skip_to_content": "Skip to content"
+    },
+    "blog": {
+      "empty": "There are no articles yet."
+    }
+  },
+  "customer": {
+    "account": {
+      "title": "Your account",
+      "log_out": "Log out"
+    },
+    "login_page": {
+      "title": "Log in"
+    }
+  }
+}
