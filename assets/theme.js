@@ -8,6 +8,10 @@ const BASE_PRICE = 0.01; // The 1-cent Shopify base product.
 
 window.EcrinluxTheme = window.EcrinluxTheme || {};
 
+function formatThemeCurrency(value) {
+  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(value || 0);
+}
+
 function initMobileNav() {
   const toggleBtn = document.querySelector('.mobile-nav-toggle');
   const drawer = document.querySelector('.mobile-nav-drawer');
@@ -29,30 +33,116 @@ function initMobileNav() {
 }
 
 function initVariantSelectors() {
-  const variantSelect = document.querySelector('[data-variant-select]');
-  if (!variantSelect) return;
+  const productSection = document.querySelector('[data-product-handle]');
+  if (!productSection) return;
 
-  variantSelect.addEventListener('change', (event) => {
-    const selectedOption = event.target.options[event.target.selectedIndex];
-    const price = selectedOption.getAttribute('data-price');
-    const available = selectedOption.getAttribute('data-available') === 'true';
+  const optionSelectors = Array.from(productSection.querySelectorAll('[data-product-option]'));
+  const variantInput = productSection.querySelector('[data-selected-variant]');
+  if (!optionSelectors.length || !variantInput) return;
 
-    const priceContainer = document.querySelector('.product-info__price .price-item--regular');
-    if (priceContainer && price) {
-      priceContainer.textContent = price;
-    }
+  fetch(`/products/${encodeURIComponent(productSection.dataset.productHandle)}.js`, { headers: { Accept: 'application/json' } })
+    .then((response) => {
+      if (!response.ok) throw new Error('Unable to load product variants.');
+      return response.json();
+    })
+    .then((product) => {
+      const findVariant = () => product.variants.find((variant) => optionSelectors.every((selector, index) => variant.options[index] === selector.value));
+      const updateVariant = () => {
+        const variant = findVariant();
+        const submitButton = productSection.querySelector('[data-add-to-cart]');
+        if (!variant) {
+          variantInput.value = '';
+          if (submitButton) submitButton.disabled = true;
+          return null;
+        }
 
-    const submitButton = document.querySelector('[data-add-to-cart]');
-    if (submitButton) {
-      if (available) {
-        submitButton.removeAttribute('disabled');
-        submitButton.textContent = submitButton.getAttribute('data-text-add') || 'Ajouter au panier';
-      } else {
-        submitButton.setAttribute('disabled', 'disabled');
-        submitButton.textContent = submitButton.getAttribute('data-text-sold-out') || 'Rupture de stock';
-      }
-    }
+        variantInput.value = variant.id;
+        if (submitButton) {
+          submitButton.disabled = !variant.available;
+          submitButton.textContent = variant.available ? 'Ajouter au panier' : 'Rupture de stock';
+        }
+        return variant;
+      };
+
+      optionSelectors.forEach((selector) => selector.addEventListener('change', updateVariant));
+      updateVariant();
+      initDigitConfigurator(productSection, product, updateVariant);
+    })
+    .catch((error) => {
+      console.error(error);
+      const submitButton = productSection.querySelector('[data-add-to-cart]');
+      if (submitButton) submitButton.disabled = true;
+    });
+}
+
+function initDigitConfigurator(productSection, product, updateVariant) {
+  if (productSection.dataset.configuratorProduct !== 'true') return;
+
+  const dimensionInputs = Array.from(productSection.querySelectorAll('[data-digit-dimension]'));
+  const optionSelectors = Array.from(productSection.querySelectorAll('[data-product-option]'));
+  const priceOutput = productSection.querySelector('[data-digit-price]');
+  const form = productSection.querySelector('#ProductForm');
+  if (dimensionInputs.length !== 3 || optionSelectors.length !== 3 || !form) return;
+
+  const clamp = (value) => Math.min(200, Math.max(5, Number(value) || 5));
+  const getConfiguration = () => {
+    const length = clamp(dimensionInputs.find((input) => input.dataset.digitDimension === 'length').value);
+    const width = clamp(dimensionInputs.find((input) => input.dataset.digitDimension === 'width').value);
+    const height = clamp(dimensionInputs.find((input) => input.dataset.digitDimension === 'height').value);
+    const volume = length * width * height;
+    const price = volume * PRICE_PER_CM3;
+    const roundedPrice = Math.round(price);
+    const hundreds = Math.floor(roundedPrice / 100).toString();
+    const tens = Math.floor((roundedPrice % 100) / 10).toString();
+    const units = (roundedPrice % 10).toString();
+    return { length, width, height, volume, price, roundedPrice, hundreds, tens, units };
+  };
+
+  const updateConfiguration = () => {
+    const configuration = getConfiguration();
+    dimensionInputs.forEach((input) => {
+      input.value = configuration[input.dataset.digitDimension];
+    });
+    optionSelectors.forEach((selector, index) => {
+      selector.value = [configuration.hundreds, configuration.tens, configuration.units][index];
+    });
+    if (priceOutput) priceOutput.textContent = `Prix estimé : ${formatThemeCurrency(configuration.roundedPrice)}`;
+    updateVariant();
+  };
+
+  dimensionInputs.forEach((input) => input.addEventListener('input', updateConfiguration));
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const configuration = getConfiguration();
+    const variant = updateVariant();
+    const selectedVariantId = product.variants.find((candidate) => candidate.options[0] === configuration.hundreds
+      && candidate.options[1] === configuration.tens
+      && candidate.options[2] === configuration.units)?.id;
+    const variantId = variant?.id || selectedVariantId;
+    if (!variantId) return;
+
+    const savedConfiguration = JSON.parse(localStorage.getItem('ecrinlux-bespoke') || 'null') || {};
+    const properties = {
+      Dimensions: `${configuration.length} x ${configuration.width} x ${configuration.height} cm`,
+      Volume: `${configuration.volume} cm³`,
+      'Prix calculé': `${configuration.roundedPrice.toFixed(2)} €`,
+      _Configuration_finale: JSON.stringify({ ...savedConfiguration, ...configuration })
+    };
+
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ id: variantId, quantity: 1, properties })
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error('Unable to add the configuration to cart.');
+        return response.json();
+      })
+      .then(() => { window.location.href = '/cart'; })
+      .catch((error) => console.error(error));
   });
+
+  updateConfiguration();
 }
 
 function initRevealAnimations() {
