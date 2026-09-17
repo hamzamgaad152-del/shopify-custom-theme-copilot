@@ -70,6 +70,7 @@
               </div>
             </div>
             <p class="helper-text">Le prix est calculé à partir du volume total, avec un surcoût de 5 € pour chaque panneau personnalisé.</p>
+            <div class="builder-price builder-price--inline" id="dimensionPriceEstimate">Prix estimé : 0,00 €</div>
             <div class="builder-actions">
               <button type="button" class="button button--secondary prev-step">Retour</button>
               <button type="button" class="button button--primary next-step">Suivant</button>
@@ -106,12 +107,14 @@
             <div class="corner-selector">
               <label class="corner-option">
                 <input type="radio" name="corner_type" value="plastic" checked>
-                <span>Coins en plexiglass + vis transparentes</span>
+                <span class="corner-option__visual"><img src="{{ 'corner-plastic.svg' | asset_url }}" alt="Coins en plexiglass"></span>
+                <span class="corner-option__text">Coins en plexiglass + vis transparentes</span>
                 <small>Standard · 0,00 €</small>
               </label>
               <label class="corner-option">
                 <input type="radio" name="corner_type" value="metal">
-                <span>Coins métalliques premium</span>
+                <span class="corner-option__visual"><img src="{{ 'corner-metal.svg' | asset_url }}" alt="Coins métalliques"></span>
+                <span class="corner-option__text">Coins métalliques premium</span>
                 <small>+ 9,99 €</small>
               </label>
             </div>

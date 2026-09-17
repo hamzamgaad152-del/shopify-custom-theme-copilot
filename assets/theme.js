@@ -146,7 +146,7 @@ function initBespokeBuilder() {
     width: 20,
     depth: 16,
     height: 20,
-    panels: { base: 'transparent', back: 'transparent', top: 'transparent', left: 'transparent', right: 'transparent', front: 'transparent' },
+    panels: { base: 'gloss-black', back: 'transparent', top: 'transparent', left: 'transparent', right: 'transparent', front: 'transparent' },
     cornerType: 'plastic',
     engraving: false,
     led: false,
@@ -203,7 +203,8 @@ function initBespokeBuilder() {
 
   function updatePreview(state) {
     const palette = {
-      transparent: 'rgba(180, 208, 255, 0.18)',
+      transparent: 'rgba(185, 210, 255, 0.14)',
+      'gloss-black': 'rgba(8, 11, 14, 0.96)',
       'noir-profond': 'rgba(23, 26, 29, 0.78)',
       'fume': 'rgba(142, 152, 168, 0.72)',
       'blanc-opale': 'rgba(242, 243, 244, 0.72)',
@@ -221,8 +222,10 @@ function initBespokeBuilder() {
         face.style.background = color;
         face.style.borderColor = value === 'transparent' ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.12)';
         face.style.boxShadow = value === 'transparent'
-          ? 'inset 0 0 26px rgba(203,222,255,0.25), 0 0 0 1px rgba(255,255,255,0.08)'
-          : 'inset 0 0 18px rgba(255,255,255,0.1), 0 18px 28px rgba(0,0,0,0.18)';
+          ? 'inset 0 0 18px rgba(215,227,255,0.25), 0 0 0 1px rgba(255,255,255,0.08)'
+          : value === 'gloss-black'
+            ? 'inset 0 0 20px rgba(255,255,255,0.05), 0 12px 24px rgba(0,0,0,0.35)'
+            : 'inset 0 0 18px rgba(255,255,255,0.1), 0 18px 28px rgba(0,0,0,0.18)';
         face.style.opacity = '0.96';
       }
     });
@@ -244,8 +247,10 @@ function initBespokeBuilder() {
 
     const price = getPricing(state);
     const priceEstimate = builderSection.querySelector('#builderPriceEstimate');
-    if (priceEstimate) priceEstimate.textContent = `Estimation : ${formatCurrency(price)}`;
+    const dimensionPriceEstimate = builderSection.querySelector('#dimensionPriceEstimate');
     const summaryPrice = builderSection.querySelector('#summaryPrice');
+    if (priceEstimate) priceEstimate.textContent = `Estimation : ${formatCurrency(price)}`;
+    if (dimensionPriceEstimate) dimensionPriceEstimate.textContent = `Prix estimé : ${formatCurrency(price)}`;
     if (summaryPrice) summaryPrice.textContent = formatCurrency(price);
 
     builderSection.querySelector('#previewWidth').textContent = Number(state.width).toFixed(0);
