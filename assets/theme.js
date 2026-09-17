@@ -45,7 +45,14 @@ function initVariantSelectors() {
       return response.json();
     })
     .then((productData) => {
-      const findVariant = () => productData.variants.find((variant) => optionSelectors.every((selector, index) => variant.options[index] === selector.value));
+      const findVariant = () => {
+        const [hundreds, tens, units] = optionSelectors.map((selector) => selector.value);
+        return productData.variants.find((variant) => {
+          return parseInt(variant.option1, 10) === parseInt(hundreds, 10)
+            && parseInt(variant.option2, 10) === parseInt(tens, 10)
+            && parseInt(variant.option3, 10) === parseInt(units, 10);
+        });
+      };
       const updateVariant = () => {
         const variant = findVariant();
         const submitButton = productSection.querySelector('[data-add-to-cart]');
@@ -84,20 +91,30 @@ function initDigitConfigurator(productSection, product, updateVariant) {
   if (dimensionInputs.length !== 3 || optionSelectors.length !== 3 || !form) return;
 
   const clamp = (value) => Math.min(200, Math.max(5, Number(value) || 5));
+  const readLiveValue = (selectors, fallback) => {
+    const input = productSection.querySelector(selectors);
+    return input ? (input.value || input.dataset.value || fallback) : fallback;
+  };
+  const normalizePanel = (value, fallback) => {
+    if (!value) return fallback;
+    if (value === 'gloss-black') return 'Gloss Black';
+    if (value === 'transparent') return 'Transparent';
+    return value;
+  };
   const getConfiguration = () => {
     const length = clamp(dimensionInputs.find((input) => input.dataset.digitDimension === 'length').value);
     const width = clamp(dimensionInputs.find((input) => input.dataset.digitDimension === 'width').value);
     const height = clamp(dimensionInputs.find((input) => input.dataset.digitDimension === 'height').value);
     const volumeCm3 = length * width * height;
-    const savedConfiguration = JSON.parse(localStorage.getItem('ecrinlux-bespoke') || 'null') || {};
-    const corners = savedConfiguration.cornerType === 'metal' ? 'Premium' : 'Standard Plastic';
+    const cornersValue = readLiveValue('[data-corner-type], input[name="corner_type"]:checked, select[name="corner_type"]', 'Standard Plastic');
+    const corners = cornersValue === 'metal' || cornersValue === 'Premium' ? 'Premium' : 'Standard Plastic';
     const panelLabels = {
-      base: savedConfiguration.panels?.base === 'gloss-black' ? 'Gloss Black' : (savedConfiguration.panels?.base || 'Gloss Black'),
-      top: savedConfiguration.panels?.top === 'transparent' ? 'Transparent' : (savedConfiguration.panels?.top || 'Transparent'),
-      front: savedConfiguration.panels?.front === 'transparent' ? 'Transparent' : (savedConfiguration.panels?.front || 'Transparent'),
-      back: savedConfiguration.panels?.back === 'transparent' ? 'Transparent' : (savedConfiguration.panels?.back || 'Transparent'),
-      left: savedConfiguration.panels?.left === 'transparent' ? 'Transparent' : (savedConfiguration.panels?.left || 'Transparent'),
-      right: savedConfiguration.panels?.right === 'transparent' ? 'Transparent' : (savedConfiguration.panels?.right || 'Transparent')
+      base: normalizePanel(readLiveValue('[data-panel="base"] input:checked, [data-panel-base]:checked, [data-panel-base]', 'Gloss Black'), 'Gloss Black'),
+      top: normalizePanel(readLiveValue('[data-panel="top"] input:checked, [data-panel-top]:checked, [data-panel-top]', 'Transparent'), 'Transparent'),
+      front: normalizePanel(readLiveValue('[data-panel="front"] input:checked, [data-panel-front]:checked, [data-panel-front]', 'Transparent'), 'Transparent'),
+      back: normalizePanel(readLiveValue('[data-panel="back"] input:checked, [data-panel-back]:checked, [data-panel-back]', 'Transparent'), 'Transparent'),
+      left: normalizePanel(readLiveValue('[data-panel="left"] input:checked, [data-panel-left]:checked, [data-panel-left]', 'Transparent'), 'Transparent'),
+      right: normalizePanel(readLiveValue('[data-panel="right"] input:checked, [data-panel-right]:checked, [data-panel-right]', 'Transparent'), 'Transparent')
     };
 
     let volumeCost = volumeCm3 * PRICE_PER_CM3;
@@ -137,9 +154,12 @@ function initDigitConfigurator(productSection, product, updateVariant) {
     event.preventDefault();
     const configuration = getConfiguration();
     const variant = updateVariant();
-    const selectedVariantId = product.variants.find((candidate) => candidate.options[0] === configuration.hundreds
-      && candidate.options[1] === configuration.tens
-      && candidate.options[2] === configuration.units)?.id;
+    const matchedVariant = product.variants.find((variant) => {
+      return parseInt(variant.option1, 10) === parseInt(configuration.hundreds, 10)
+        && parseInt(variant.option2, 10) === parseInt(configuration.tens, 10)
+        && parseInt(variant.option3, 10) === parseInt(configuration.units, 10);
+    });
+    const selectedVariantId = matchedVariant?.id;
     const variantId = variant?.id || selectedVariantId;
     if (!variantId) return;
 
