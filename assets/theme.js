@@ -90,12 +90,11 @@ function initDigitConfigurator(productSection, product, updateVariant) {
     const width = clamp(dimensionInputs.find((input) => input.dataset.digitDimension === 'width').value);
     const height = clamp(dimensionInputs.find((input) => input.dataset.digitDimension === 'height').value);
     const volume = length * width * height;
-    const price = volume * PRICE_PER_CM3;
-    const roundedPrice = Math.round(price);
-    const hundreds = Math.floor(roundedPrice / 100).toString();
-    const tens = Math.floor((roundedPrice % 100) / 10).toString();
-    const units = (roundedPrice % 10).toString();
-    return { length, width, height, volume, price, roundedPrice, hundreds, tens, units };
+    const price = Math.round(volume * PRICE_PER_CM3);
+    const hundreds = Math.floor(price / 100).toString();
+    const tens = Math.floor((price % 100) / 10).toString();
+    const units = (price % 10).toString();
+    return { length, width, height, volume, price, hundreds, tens, units };
   };
 
   const updateConfiguration = () => {
@@ -106,7 +105,7 @@ function initDigitConfigurator(productSection, product, updateVariant) {
     optionSelectors.forEach((selector, index) => {
       selector.value = [configuration.hundreds, configuration.tens, configuration.units][index];
     });
-    if (priceOutput) priceOutput.textContent = `Prix estimé : ${formatThemeCurrency(configuration.roundedPrice)}`;
+    if (priceOutput) priceOutput.textContent = `Prix estimé : ${formatThemeCurrency(configuration.price)}`;
     updateVariant();
   };
 
@@ -125,7 +124,7 @@ function initDigitConfigurator(productSection, product, updateVariant) {
     const properties = {
       Dimensions: `${configuration.length} x ${configuration.width} x ${configuration.height} cm`,
       Volume: `${configuration.volume} cm³`,
-      'Prix calculé': `${configuration.roundedPrice.toFixed(2)} €`,
+      'Prix calculé': `${configuration.price.toFixed(2)} €`,
       _Configuration_finale: JSON.stringify({ ...savedConfiguration, ...configuration })
     };
 
