@@ -28,6 +28,15 @@
                       {%- unless item.product.has_only_default_variant -%}
                         <p style="font-size: 0.85rem; color: var(--color-secondary); margin: 4px 0 0;">{{ item.variant.title }}</p>
                       {%- endunless -%}
+                      {%- if item.properties != blank -%}
+                        <ul style="list-style: none; padding: 0; margin: 8px 0 0; font-size: 0.78rem; color: var(--color-secondary);">
+                          {%- for property in item.properties -%}
+                            {%- unless property.first == 'Volume cm³' -%}
+                              <li><strong>{{ property.first }}:</strong> {{ property.last }}</li>
+                            {%- endunless -%}
+                          {%- endfor -%}
+                        </ul>
+                      {%- endif -%}
                       <div style="margin-top: 6px;">
                         <a href="{{ routes.cart_change_url }}?line={{ forloop.index }}&quantity=0" style="font-size: 0.85rem; color: #ef4444;">
                           {{ 'sections.cart.remove' | t }}
@@ -37,15 +46,21 @@
                   </div>
                 </td>
                 <td>
-                  <input 
-                    type="number" 
-                    name="updates[]" 
-                    value="{{ item.quantity }}" 
-                    min="0" 
-                    class="product-form__quantity-input" 
-                    style="max-width: 80px;"
-                    aria-label="{{ 'sections.cart.quantity' | t }}"
-                  >
+                  {%- if item.properties and item.properties['Volume cm³'] != blank -%}
+                    <input type="hidden" name="updates[]" value="{{ item.quantity }}">
+                    <span style="display: inline-block; min-width: 48px; text-align: center; padding: 8px 12px; border: 1px solid var(--color-border); border-radius: 999px; background: rgba(255,255,255,0.02);">1</span>
+                    <div style="font-size: 0.75rem; color: var(--color-secondary); margin-top: 6px;">Volume : {{ item.properties['Volume cm³'] }} cm³</div>
+                  {%- else -%}
+                    <input 
+                      type="number" 
+                      name="updates[]" 
+                      value="{{ item.quantity }}" 
+                      min="0" 
+                      class="product-form__quantity-input" 
+                      style="max-width: 80px;"
+                      aria-label="{{ 'sections.cart.quantity' | t }}"
+                    >
+                  {%- endif -%}
                 </td>
                 <td style="text-align: right; font-weight: 600;">
                   {{ item.final_line_price | money }}

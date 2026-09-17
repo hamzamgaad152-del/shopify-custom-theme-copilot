@@ -1,4 +1,4 @@
-<section class="bespoke-builder" data-bespoke-builder data-pricing-url="{{ 'custom-pricing.json' | asset_url }}" data-custom-product-id="{{ section.settings.custom_case_product.id | default: section.settings.custom_case_product | default: 0 }}">
+<section class="bespoke-builder" data-bespoke-builder data-pricing-url="{{ 'custom-pricing.json' | asset_url }}" data-custom-product-id="{{ section.settings.custom_case_product.id | default: 0 }}" data-custom-variant-id="{{ section.settings.custom_case_product.variants.first.id | default: 0 }}">
   <div class="container">
     <div class="builder-hero reveal">
       <div class="builder-hero__badge">Custom Case Design</div>
