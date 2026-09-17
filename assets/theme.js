@@ -3,7 +3,7 @@
  * Lightweight, vanilla JavaScript for responsive navigation, product forms, and interactions.
  */
 
-const PRICE_PER_CM3 = 0.002; // Change this value to update the custom case price.
+const PRICE_PER_CM3 = 0.0025; // Change this value to update the custom case price.
 
 window.EcrinluxTheme = window.EcrinluxTheme || {};
 
@@ -88,14 +88,36 @@ function initDigitConfigurator(productSection, product, updateVariant) {
     const length = clamp(dimensionInputs.find((input) => input.dataset.digitDimension === 'length').value);
     const width = clamp(dimensionInputs.find((input) => input.dataset.digitDimension === 'width').value);
     const height = clamp(dimensionInputs.find((input) => input.dataset.digitDimension === 'height').value);
-    const volume = length * width * height;
-    let rawMaterialPrice = Math.round(volume * PRICE_PER_CM3);
-    if (rawMaterialPrice > 999) rawMaterialPrice = 999;
-    const price = rawMaterialPrice;
-    const hundreds = Math.floor(price / 100).toString();
-    const tens = Math.floor((price % 100) / 10).toString();
-    const units = (price % 10).toString();
-    return { length, width, height, volume, price, hundreds, tens, units };
+    const volumeCm3 = length * width * height;
+    const savedConfiguration = JSON.parse(localStorage.getItem('ecrinlux-bespoke') || 'null') || {};
+    const corners = savedConfiguration.cornerType === 'metal' ? 'Premium' : 'Standard Plastic';
+    const panelLabels = {
+      base: savedConfiguration.panels?.base === 'gloss-black' ? 'Gloss Black' : (savedConfiguration.panels?.base || 'Gloss Black'),
+      top: savedConfiguration.panels?.top === 'transparent' ? 'Transparent' : (savedConfiguration.panels?.top || 'Transparent'),
+      front: savedConfiguration.panels?.front === 'transparent' ? 'Transparent' : (savedConfiguration.panels?.front || 'Transparent'),
+      back: savedConfiguration.panels?.back === 'transparent' ? 'Transparent' : (savedConfiguration.panels?.back || 'Transparent'),
+      left: savedConfiguration.panels?.left === 'transparent' ? 'Transparent' : (savedConfiguration.panels?.left || 'Transparent'),
+      right: savedConfiguration.panels?.right === 'transparent' ? 'Transparent' : (savedConfiguration.panels?.right || 'Transparent')
+    };
+
+    let volumeCost = volumeCm3 * PRICE_PER_CM3;
+    let addonsCost = 0;
+    const PANEL_ADDON_PRICE = 5;
+    const PREMIUM_CORNER_PRICE = 10;
+    if (corners === 'Premium') addonsCost += PREMIUM_CORNER_PRICE;
+    if (panelLabels.base !== 'Gloss Black') addonsCost += PANEL_ADDON_PRICE;
+    if (panelLabels.top !== 'Transparent') addonsCost += PANEL_ADDON_PRICE;
+    if (panelLabels.front !== 'Transparent') addonsCost += PANEL_ADDON_PRICE;
+    if (panelLabels.back !== 'Transparent') addonsCost += PANEL_ADDON_PRICE;
+    if (panelLabels.left !== 'Transparent') addonsCost += PANEL_ADDON_PRICE;
+    if (panelLabels.right !== 'Transparent') addonsCost += PANEL_ADDON_PRICE;
+
+    let totalRawPrice = Math.round(volumeCost + addonsCost);
+    if (totalRawPrice > 999) totalRawPrice = 999;
+    const hundreds = Math.floor(totalRawPrice / 100).toString();
+    const tens = Math.floor((totalRawPrice % 100) / 10).toString();
+    const units = (totalRawPrice % 10).toString();
+    return { length, width, height, volumeCm3, totalRawPrice, hundreds, tens, units, corners, ...panelLabels };
   };
 
   const updateConfiguration = () => {
@@ -106,7 +128,7 @@ function initDigitConfigurator(productSection, product, updateVariant) {
     optionSelectors.forEach((selector, index) => {
       selector.value = [configuration.hundreds, configuration.tens, configuration.units][index];
     });
-    if (priceOutput) priceOutput.textContent = `Prix estimé : ${formatThemeCurrency(configuration.price)}`;
+    if (priceOutput) priceOutput.textContent = `Prix estimé : ${formatThemeCurrency(configuration.totalRawPrice)}`;
     updateVariant();
   };
 
@@ -121,18 +143,30 @@ function initDigitConfigurator(productSection, product, updateVariant) {
     const variantId = variant?.id || selectedVariantId;
     if (!variantId) return;
 
-    const savedConfiguration = JSON.parse(localStorage.getItem('ecrinlux-bespoke') || 'null') || {};
-    const properties = {
-      Dimensions: `${configuration.length} x ${configuration.width} x ${configuration.height} cm`,
-      Volume: `${configuration.volume} cm³`,
-      'Prix calculé': `${configuration.price.toFixed(2)} €`,
-      _Configuration_finale: JSON.stringify({ ...savedConfiguration, ...configuration })
+    const objetName = configuration.object || JSON.parse(localStorage.getItem('ecrinlux-bespoke') || 'null')?.object || '';
+    const fullConfigurationState = {
+      ...JSON.parse(localStorage.getItem('ecrinlux-bespoke') || 'null') || {},
+      ...configuration,
+      object: objetName
     };
+    let finalProperties = {};
+    finalProperties.Dimensions = `${configuration.length} x ${configuration.width} x ${configuration.height} cm`;
+    if (configuration.corners === 'Premium') finalProperties['Finition des coins'] = 'Premium (+10€)';
+    if (configuration.base !== 'Gloss Black') finalProperties['Panneau Bas'] = configuration.base;
+    if (configuration.top !== 'Transparent') finalProperties['Panneau Haut'] = configuration.top;
+    if (configuration.front !== 'Transparent') finalProperties['Panneau Avant'] = configuration.front;
+    if (configuration.back !== 'Transparent') finalProperties['Panneau Arrière'] = configuration.back;
+    if (configuration.left !== 'Transparent') finalProperties['Panneau Gauche'] = configuration.left;
+    if (configuration.right !== 'Transparent') finalProperties['Panneau Droit'] = configuration.right;
+    finalProperties._Objet = objetName;
+    finalProperties._Volume = configuration.volumeCm3;
+    finalProperties._Prix_estime = configuration.totalRawPrice;
+    finalProperties._Configuration_finale = JSON.stringify(fullConfigurationState);
 
     fetch('/cart/add.js', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({ id: variantId, quantity: 1, properties })
+      body: JSON.stringify({ id: variantId, quantity: 1, properties: finalProperties })
     })
       .then((response) => {
         if (!response.ok) throw new Error('Unable to add the configuration to cart.');
