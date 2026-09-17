@@ -350,11 +350,20 @@ function initBespokeBuilder() {
   function getPricing(state) {
     const pricing = customPricing || pricingFallback;
     const volumeCm3 = getVolumeCm3(state);
-    const baseCost = volumeCm3 * (pricing.baseRate || pricingFallback.baseRate);
-    const panelCost = Object.values(state.panels)
-      .reduce((sum, panelColor) => sum + (pricing.panelCosts?.[panelColor] ?? pricingFallback.panelCosts[panelColor] ?? 0), 0);
-    const cornerCost = state.cornerType === 'metal' ? (pricing.metalCorners || pricingFallback.metalCorners) : 0;
-    return Number((baseCost + panelCost + cornerCost).toFixed(2));
+    const baseRate = Number(pricing.baseRate) || Number(pricingFallback.baseRate);
+    const baseCost = volumeCm3 * baseRate;
+    const panelKeys = { base: 'bottom', back: 'back', top: 'top', left: 'left', right: 'right', front: 'front' };
+    const panelCost = Object.entries(state.panels).reduce((sum, [panelKey, panelColor]) => {
+      const configuredCost = pricing.panelCosts?.[panelColor];
+      const cost = typeof configuredCost === 'object'
+        ? configuredCost[panelKeys[panelKey]] ?? configuredCost.bottom ?? 0
+        : configuredCost ?? pricingFallback.panelCosts[panelColor] ?? 0;
+      return sum + (Number(cost) || 0);
+    }, 0);
+    const cornerCost = state.cornerType === 'metal'
+      ? Number(pricing.metalCorners) || Number(pricingFallback.metalCorners)
+      : 0;
+    return Number((Number(baseCost) + Number(panelCost) + Number(cornerCost)).toFixed(2));
   }
 
   function updatePreview(state) {
