@@ -129,12 +129,13 @@ function initDigitConfigurator(productSection, product, updateVariant) {
     if (panelLabels.left !== 'Transparent') addonsCost += PANEL_ADDON_PRICE;
     if (panelLabels.right !== 'Transparent') addonsCost += PANEL_ADDON_PRICE;
 
-    let totalRawPrice = Math.round(volumeCost + addonsCost);
-    if (totalRawPrice > 999) totalRawPrice = 999;
-    const hundreds = Math.floor(totalRawPrice / 100).toString();
-    const tens = Math.floor((totalRawPrice % 100) / 10).toString();
-    const units = (totalRawPrice % 10).toString();
-    return { length, width, height, volumeCm3, totalRawPrice, hundreds, tens, units, corners, ...panelLabels };
+    let totalExtraCost = volumeCost + addonsCost;
+    let finalVariantCost = Math.ceil(totalExtraCost);
+    if (finalVariantCost > 999) finalVariantCost = 999;
+    const hundreds = Math.floor(finalVariantCost / 100).toString();
+    const tens = Math.floor((finalVariantCost % 100) / 10).toString();
+    const units = (finalVariantCost % 10).toString();
+    return { length, width, height, volumeCm3, totalExtraCost, finalVariantCost, totalRawPrice: finalVariantCost, hundreds, tens, units, corners, ...panelLabels };
   };
 
   const updateConfiguration = () => {
