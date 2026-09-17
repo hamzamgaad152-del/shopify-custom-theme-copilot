@@ -1274,8 +1274,10 @@ h1, h2, h3, h4, h5, h6 {
   width: var(--case-width);
   height: var(--case-height);
   transform-style: preserve-3d;
-  transform: rotateX(-20deg) rotateY(28deg) scale(1.08);
-  transition: transform 0.3s ease;
+  transform: rotateX(-24deg) rotateY(28deg) scale(1.08);
+  transition: transform 0.2s ease, width 0.2s ease, height 0.2s ease;
+  perspective: 1200px;
+  will-change: transform;
 }
 
 .builder-face {
@@ -1320,6 +1322,15 @@ h1, h2, h3, h4, h5, h6 {
 .builder-face--right { transform: rotateY(90deg) translateZ(calc(var(--case-width) / 2)); }
 .builder-face--top { transform: rotateX(90deg) translateZ(calc(var(--case-height) / 2)); }
 .builder-face--base { transform: rotateX(-90deg) translateZ(calc(var(--case-height) / 2)); }
+
+.builder-preview__frame {
+  cursor: grab;
+  user-select: none;
+}
+
+.builder-preview__frame:active {
+  cursor: grabbing;
+}
 
 .builder-price {
   margin-top: 1rem;

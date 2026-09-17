@@ -138,8 +138,7 @@ function initBespokeBuilder() {
   let customPricing = pricingFallback;
   let manualRotation = { x: 0, y: 0 };
   let isDragging = false;
-  let dragStartX = 0;
-  let dragStartY = 0;
+  let dragStart = null;
 
   const defaultState = {
     step: 0,
@@ -156,6 +155,10 @@ function initBespokeBuilder() {
     engravingText: ''
   };
 
+  const MIN_DIMENSION = 5;
+  const MAX_DIMENSION = 200;
+  const clampDimension = (value, min, max) => Math.min(Math.max(Number(value) || min, min), max);
+
   function readState() {
     const saved = JSON.parse(localStorage.getItem('ecrinlux-bespoke') || 'null') || defaultState;
     const params = new URLSearchParams(window.location.search);
@@ -163,9 +166,9 @@ function initBespokeBuilder() {
       ...defaultState,
       ...saved,
       object: params.get('object') || saved.object || defaultState.object,
-      width: Number(params.get('width')) || Number(saved.width) || defaultState.width,
-      depth: Number(params.get('depth')) || Number(saved.depth) || defaultState.depth,
-      height: Number(params.get('height')) || Number(saved.height) || defaultState.height,
+      width: clampDimension(params.get('width') || saved.width || defaultState.width, MIN_DIMENSION, MAX_DIMENSION),
+      depth: clampDimension(params.get('depth') || saved.depth || defaultState.depth, MIN_DIMENSION, MAX_DIMENSION),
+      height: clampDimension(params.get('height') || saved.height || defaultState.height, MIN_DIMENSION, MAX_DIMENSION),
       cornerType: params.get('corner') || saved.cornerType || defaultState.cornerType,
       engravingText: params.get('engraving') || saved.engravingText || defaultState.engravingText
     };
@@ -200,46 +203,43 @@ function initBespokeBuilder() {
 
   function updatePreview(state) {
     const palette = {
-      transparent: 'rgba(170, 214, 255, 0.22)',
-      'noir-profond': '#171a1d',
+      transparent: 'rgba(180, 208, 255, 0.18)',
+      'noir-profond': 'rgba(23, 26, 29, 0.78)',
       'fume': 'rgba(142, 152, 168, 0.72)',
-      'blanc-opale': '#f2f3f4',
-      'bleu-nuit': '#2c4d82',
-      'rouge-carmin': '#6f1d1b',
-      'vert-racing': '#295840',
-      'or-miroir': '#b99334',
-      'argent-miroir': '#a8b1bb'
+      'blanc-opale': 'rgba(242, 243, 244, 0.72)',
+      'bleu-nuit': 'rgba(44, 77, 130, 0.7)',
+      'rouge-carmin': 'rgba(111, 29, 27, 0.7)',
+      'vert-racing': 'rgba(41, 88, 64, 0.7)',
+      'or-miroir': 'rgba(185, 147, 52, 0.75)',
+      'argent-miroir': 'rgba(168, 177, 187, 0.7)'
     };
 
     Object.entries(state.panels).forEach(([key, value]) => {
       const face = caseElement.querySelector(`[data-panel-face="${key}"]`);
       if (face) {
-        const isTransparent = value === 'transparent';
-        face.style.background = palette[value] || palette.transparent;
-        face.style.borderColor = isTransparent ? 'rgba(255, 255, 255, 0.32)' : 'rgba(255,255,255,0.12)';
-        face.style.boxShadow = isTransparent
-          ? 'inset 0 0 18px rgba(190,215,255,0.18), 0 0 0 1px rgba(255,255,255,0.08)'
-          : 'inset 0 0 18px rgba(255,255,255,0.08), 0 18px 28px rgba(0,0,0,0.22)';
+        const color = palette[value] || palette.transparent;
+        face.style.background = color;
+        face.style.borderColor = value === 'transparent' ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.12)';
+        face.style.boxShadow = value === 'transparent'
+          ? 'inset 0 0 26px rgba(203,222,255,0.25), 0 0 0 1px rgba(255,255,255,0.08)'
+          : 'inset 0 0 18px rgba(255,255,255,0.1), 0 18px 28px rgba(0,0,0,0.18)';
+        face.style.opacity = '0.96';
       }
     });
 
-    const widthRatio = Math.max(0.9, Math.min(1.6, Number(state.width) / 28));
-    const depthRatio = Math.max(0.8, Math.min(1.6, Number(state.depth) / 18));
-    const heightRatio = Math.max(0.9, Math.min(1.6, Number(state.height) / 22));
-
-    const widthPx = Math.round(160 * widthRatio);
-    const depthPx = Math.round(120 * depthRatio);
-    const heightPx = Math.round(160 * heightRatio);
+    const widthScale = (Number(state.width) / 200) * 1.2;
+    const depthScale = (Number(state.depth) / 200) * 1.1;
+    const heightScale = (Number(state.height) / 200) * 1.2;
+    const widthPx = Math.round(80 + widthScale * 180);
+    const depthPx = Math.round(70 + depthScale * 150);
+    const heightPx = Math.round(80 + heightScale * 180);
 
     caseElement.style.setProperty('--case-width', `${widthPx}px`);
     caseElement.style.setProperty('--case-depth', `${depthPx}px`);
     caseElement.style.setProperty('--case-height', `${heightPx}px`);
 
-    const xAngle = (manualRotation.x || 0) % 45;
-    const yAngle = (manualRotation.y || 0) % 45;
-    const clampedX = Math.min(Math.max(xAngle, -45), 45);
-    const clampedY = Math.min(Math.max(yAngle, -45), 45);
-
+    const clampedX = Math.min(Math.max((manualRotation.x || 0), -45), 45);
+    const clampedY = Math.min(Math.max((manualRotation.y || 0), -45), 45);
     caseElement.style.transform = `rotateX(${clampedX}deg) rotateY(${clampedY}deg) scale(1.08)`;
 
     const price = getPricing(state);
@@ -321,9 +321,9 @@ function initBespokeBuilder() {
     };
 
     const clamped = {
-      width: Math.min(Math.max(widthValue, 20), 40),
-      depth: Math.min(Math.max(depthValue, 16), 34),
-      height: Math.min(Math.max(heightValue, 20), 40)
+      width: clampDimension(widthValue, MIN_DIMENSION, MAX_DIMENSION),
+      depth: clampDimension(depthValue, MIN_DIMENSION, MAX_DIMENSION),
+      height: clampDimension(heightValue, MIN_DIMENSION, MAX_DIMENSION)
     };
 
     return {
@@ -340,6 +340,20 @@ function initBespokeBuilder() {
       rotating: builderSection.querySelector('input[name="rotating"]')?.checked || false,
       panels
     };
+  }
+
+  async function loadPricing() {
+    if (!pricingUrl) return;
+    try {
+      const response = await fetch(pricingUrl, { cache: 'no-store' });
+      if (!response.ok) return;
+      const data = await response.json();
+      if (data && data.baseRate) {
+        customPricing = { ...pricingFallback, ...data, panelCosts: { ...pricingFallback.panelCosts, ...(data.panelCosts || {}) } };
+      }
+    } catch (error) {
+      customPricing = pricingFallback;
+    }
   }
 
   function applyState() {
@@ -376,29 +390,33 @@ function initBespokeBuilder() {
 
   previewFrame.addEventListener('pointerdown', (event) => {
     isDragging = true;
-    dragStartX = event.clientX;
-    dragStartY = event.clientY;
+    dragStart = {
+      x: event.clientX,
+      y: event.clientY,
+      rotationX: manualRotation.x,
+      rotationY: manualRotation.y
+    };
     previewFrame.setPointerCapture(event.pointerId);
   });
 
   previewFrame.addEventListener('pointermove', (event) => {
-    if (!isDragging) return;
-    const deltaX = event.clientX - dragStartX;
-    const deltaY = event.clientY - dragStartY;
-    manualRotation.y = Math.min(Math.max((manualRotation.y || 0) + deltaX * 0.25, -45), 45);
-    manualRotation.x = Math.min(Math.max((manualRotation.x || 0) - deltaY * 0.2, -45), 45);
-    dragStartX = event.clientX;
-    dragStartY = event.clientY;
+    if (!isDragging || !dragStart) return;
+    const deltaX = event.clientX - dragStart.x;
+    const deltaY = event.clientY - dragStart.y;
+    manualRotation.y = Math.min(Math.max(dragStart.rotationY + deltaX * 0.25, -45), 45);
+    manualRotation.x = Math.min(Math.max(dragStart.rotationX - deltaY * 0.2, -45), 45);
     const state = gatherCurrentInputState();
     updatePreview(state);
   });
 
   previewFrame.addEventListener('pointerup', () => {
     isDragging = false;
+    dragStart = null;
   });
 
   previewFrame.addEventListener('pointerleave', () => {
     isDragging = false;
+    dragStart = null;
   });
 
   builderSection.querySelectorAll('.stepper-btn').forEach((button) => {
@@ -407,8 +425,8 @@ function initBespokeBuilder() {
       const input = builderSection.querySelector(`#${key}Input`);
       const currentValue = Number(input.value || 0);
       const delta = button.dataset.action === 'increase' ? 1 : -1;
-      const minValue = key === 'width' ? 20 : key === 'depth' ? 16 : 20;
-      const maxValue = key === 'width' ? 40 : key === 'depth' ? 34 : 40;
+      const minValue = key === 'width' ? MIN_DIMENSION : key === 'depth' ? MIN_DIMENSION : MIN_DIMENSION;
+      const maxValue = key === 'width' ? MAX_DIMENSION : key === 'depth' ? MAX_DIMENSION : MAX_DIMENSION;
       input.value = Math.min(Math.max(currentValue + delta, minValue), maxValue);
       input.dispatchEvent(new Event('input'));
     });
@@ -453,22 +471,14 @@ function initBespokeBuilder() {
     notice.textContent = `Votre écrin ${state.object || 'sur mesure'} a été estimé à ${formatCurrency(price)}. ${variantId ? 'Le produit est prêt à être ajouté au panier.' : 'Configurez le produit personnalisé dans Shopify pour compléter l’ajout au panier.'}`;
     localStorage.setItem('ecrinlux-bespoke', JSON.stringify({ ...state, step: 4, finalPrice: price }));
 
-    if (variantId && window.Shopify && window.Shopify.storefrontApi) {
-      return;
-    }
-
     if (!variantId) {
       return;
     }
 
-    const cartForm = {
-      items: [{ id: variantId, quantity: 1, properties: { configuration: JSON.stringify(state) } }]
-    };
-
     fetch('/cart/add.js', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify(cartForm.items[0])
+      body: JSON.stringify({ id: variantId, quantity: 1, properties: { configuration: JSON.stringify(state) } })
     })
       .then((response) => response.json())
       .then(() => {
@@ -480,6 +490,7 @@ function initBespokeBuilder() {
       });
   });
 
+  loadPricing();
   applyState();
 }
 
