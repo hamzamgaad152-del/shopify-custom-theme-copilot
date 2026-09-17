@@ -1,8 +1,4 @@
-{% assign is_configurator_product = false %}
-{% if template.suffix == 'configurator' or product.tags contains 'custom-case' or product.handle == 'ecrinlux-boite-sur-mesure' %}
-  {% assign is_configurator_product = true %}
-{% endif %}
-<section class="product-template" data-section-id="{{ section.id }}" data-product-handle="{{ product.handle }}" data-configurator-product="{{ is_configurator_product }}">
+<section class="product-template" data-section-id="{{ section.id }}" data-product-handle="{{ product.handle }}" data-configurator-product="{% if template.suffix == 'configurator' %}true{% else %}false{% endif %}">
   <div class="container">
     <div class="product-template__grid">
       <div class="product-gallery reveal">
@@ -47,7 +43,7 @@
             </div>
           {% endunless %}
 
-          {% if is_configurator_product %}
+          {% if template.suffix == 'configurator' %}
             <div class="product-form__dimensions" data-digit-dimensions>
               <p class="product-form__label">Dimensions (cm)</p>
               <div class="dimension-grid">
@@ -70,7 +66,7 @@
             </button>
           </div>
 
-          {% if section.settings.show_dynamic_checkout and is_configurator_product == false %}
+          {% if section.settings.show_dynamic_checkout and template.suffix != 'configurator' %}
             <div class="product-form__payment">{{ form | payment_button }}</div>
           {% endif %}
         {% endform %}

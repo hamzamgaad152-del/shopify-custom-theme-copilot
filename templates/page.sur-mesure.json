@@ -12,7 +12,7 @@
     "main": {
       "type": "bespoke-builder",
       "settings": {
-        "custom_case_product": "ecrin-sur-mesure"
+        "custom_case_product": "ecrinlux-sur-mesure"
       }
     }
   },
