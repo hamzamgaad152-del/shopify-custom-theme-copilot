@@ -24,7 +24,9 @@
     {% if collection.products.size > 0 %}
       <div class="product-grid">
         {% for product in collection.products %}
-          {% render 'product-card', product: product %}
+          {% unless product.tags contains 'hidden-from-storefront' or product.tags contains 'custom-case' or product.handle == 'ecrin-sur-mesure' or product.handle == 'custom-case' %}
+            {% render 'product-card', product: product %}
+          {% endunless %}
         {% endfor %}
       </div>
 

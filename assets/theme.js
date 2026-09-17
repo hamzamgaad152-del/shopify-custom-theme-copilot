@@ -135,6 +135,10 @@ function initBespokeBuilder() {
       "argent-miroir": 5
     }
   };
+  const cornerOptions = [
+    { id: 'plastic', label: 'Standard Plastic', price: 0 },
+    { id: 'metal', label: '1 cm Aluminum Cubes', price: 9.99 }
+  ];
   let customPricing = pricingFallback;
   let manualRotation = { x: 0, y: 0 };
   let isDragging = false;
@@ -191,9 +195,14 @@ function initBespokeBuilder() {
     return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(value || 0);
   }
 
+  function getVolumeCm3(state) {
+    const volume = Number(state.width) * Number(state.depth) * Number(state.height);
+    return Math.max(1, Number(Math.round(volume || 1)));
+  }
+
   function getPricing(state) {
     const pricing = customPricing || pricingFallback;
-    const volumeCm3 = Number(state.width) * Number(state.depth) * Number(state.height);
+    const volumeCm3 = getVolumeCm3(state);
     const baseCost = volumeCm3 * (pricing.baseRate || pricingFallback.baseRate);
     const panelCost = Object.values(state.panels)
       .reduce((sum, panelColor) => sum + (pricing.panelCosts?.[panelColor] ?? pricingFallback.panelCosts[panelColor] ?? 0), 0);
@@ -470,11 +479,24 @@ function initBespokeBuilder() {
     event.preventDefault();
     const state = gatherCurrentInputState();
     const price = getPricing(state);
-    const productId = Number(builderSection.dataset.customProductId || 0);
-    const variantId = productId ? Number(productId) : null;
+    const baseProductId = Number(builderSection.dataset.customProductId || 0);
+    const variantId = Number(builderSection.dataset.customVariantId || 0) || baseProductId || null;
+    const volume = getVolumeCm3(state);
+    const selectedCorner = cornerOptions.find((option) => option.id === state.cornerType) || cornerOptions[0];
+    const configurationPayload = {
+      object: state.object || 'Sur mesure',
+      width: Number(state.width),
+      depth: Number(state.depth),
+      height: Number(state.height),
+      volumeCm3: volume,
+      panels: state.panels,
+      cornerType: selectedCorner.label,
+      price: Number(price.toFixed(2)),
+      currency: 'EUR'
+    };
 
     notice.textContent = `Votre écrin ${state.object || 'sur mesure'} a été estimé à ${formatCurrency(price)}. ${variantId ? 'Le produit est prêt à être ajouté au panier.' : 'Configurez le produit personnalisé dans Shopify pour compléter l’ajout au panier.'}`;
-    localStorage.setItem('ecrinlux-bespoke', JSON.stringify({ ...state, step: 4, finalPrice: price }));
+    localStorage.setItem('ecrinlux-bespoke', JSON.stringify({ ...state, step: 4, finalPrice: price, volumeCm3: volume }));
 
     if (!variantId) {
       return;
@@ -483,7 +505,24 @@ function initBespokeBuilder() {
     fetch('/cart/add.js', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({ id: variantId, quantity: 1, properties: { configuration: JSON.stringify(state) } })
+      body: JSON.stringify({
+        id: variantId,
+        quantity: volume,
+        properties: {
+          Objet: state.object || 'Sur mesure',
+          Dimensions: `${Number(state.width)} x ${Number(state.depth)} x ${Number(state.height)} cm`,
+          'Volume cm³': `${volume}`,
+          'Corner Type': selectedCorner.label,
+          'Bottom Panel': state.panels.base || 'Gloss Black',
+          'Top Panel': state.panels.top || 'Transparent',
+          'Front Panel': state.panels.front || 'Transparent',
+          'Back Panel': state.panels.back || 'Transparent',
+          'Left Panel': state.panels.left || 'Transparent',
+          'Right Panel': state.panels.right || 'Transparent',
+          'Prix estimé': formatCurrency(price),
+          'Configuration finale': JSON.stringify(configurationPayload)
+        }
+      })
     })
       .then((response) => response.json())
       .then(() => {
