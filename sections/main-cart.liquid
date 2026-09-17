@@ -46,29 +46,19 @@
                   </div>
                 </td>
                 <td>
-                  {%- if item.properties and item.properties['Volume cm³'] != blank -%}
-                    <!-- VISUAL INPUT (No 'name' attribute so it doesn't submit) -->
-                    <input type="number"
-                      class="cart-quantity-visual"
-                      value="1"
-                      readonly>
+                  <!-- Visual Input for the Customer (Must not have a 'name' attribute so it doesn't submit) -->
+                  <input type="number"
+                    class="visual-quantity-only"
+                    value="{% if item.properties._Configuration_finale or item.properties['Volume cm³'] != blank %}1{% else %}{{ item.quantity }}{% endif %}"
+                    readonly>
 
-                    <!-- HIDDEN INPUT (Contains the real hacked quantity and submits to Shopify) -->
-                    <input type="hidden"
-                      name="updates[{{ item.key }}]"
-                      value="{{ item.quantity }}"
-                      id="Quantity-{{ item.index | plus: 1 }}">
+                  <!-- Hidden Input for Shopify (This sends the REAL quantity to checkout) -->
+                  <input type="hidden"
+                    name="updates[{{ item.key }}]"
+                    value="{{ item.quantity }}"
+                    id="Quantity-{{ item.index | plus: 1 }}">
+                  {%- if item.properties and item.properties['Volume cm³'] != blank -%}
                     <div style="font-size: 0.75rem; color: var(--color-secondary); margin-top: 6px;">Volume : {{ item.properties['Volume cm³'] }} cm³</div>
-                  {%- else -%}
-                    <input 
-                      type="number" 
-                      name="updates[]" 
-                      value="{{ item.quantity }}" 
-                      min="0" 
-                      class="product-form__quantity-input" 
-                      style="max-width: 80px;"
-                      aria-label="{{ 'sections.cart.quantity' | t }}"
-                    >
                   {%- endif -%}
                 </td>
                 <td style="text-align: right; font-weight: 600;">
