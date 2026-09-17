@@ -4,7 +4,6 @@
  */
 
 const PRICE_PER_CM3 = 0.002; // Change this value to update the custom case price.
-const BASE_PRICE = 0.01; // The 1-cent Shopify base product.
 
 window.EcrinluxTheme = window.EcrinluxTheme || {};
 
@@ -40,13 +39,13 @@ function initVariantSelectors() {
   const variantInput = productSection.querySelector('[data-selected-variant]');
   if (!optionSelectors.length || !variantInput) return;
 
-  fetch(`/products/${encodeURIComponent(productSection.dataset.productHandle)}.js`, { headers: { Accept: 'application/json' } })
+  fetch(productSection.dataset.productJsonUrl, { headers: { Accept: 'application/json' } })
     .then((response) => {
       if (!response.ok) throw new Error('Unable to load product variants.');
       return response.json();
     })
-    .then((product) => {
-      const findVariant = () => product.variants.find((variant) => optionSelectors.every((selector, index) => variant.options[index] === selector.value));
+    .then((productData) => {
+      const findVariant = () => productData.variants.find((variant) => optionSelectors.every((selector, index) => variant.options[index] === selector.value));
       const updateVariant = () => {
         const variant = findVariant();
         const submitButton = productSection.querySelector('[data-add-to-cart]');
@@ -66,7 +65,7 @@ function initVariantSelectors() {
 
       optionSelectors.forEach((selector) => selector.addEventListener('change', updateVariant));
       updateVariant();
-      initDigitConfigurator(productSection, product, updateVariant);
+      initDigitConfigurator(productSection, productData, updateVariant);
     })
     .catch((error) => {
       console.error(error);
@@ -90,7 +89,9 @@ function initDigitConfigurator(productSection, product, updateVariant) {
     const width = clamp(dimensionInputs.find((input) => input.dataset.digitDimension === 'width').value);
     const height = clamp(dimensionInputs.find((input) => input.dataset.digitDimension === 'height').value);
     const volume = length * width * height;
-    const price = Math.round(volume * PRICE_PER_CM3);
+    let rawMaterialPrice = Math.round(volume * PRICE_PER_CM3);
+    if (rawMaterialPrice > 999) rawMaterialPrice = 999;
+    const price = rawMaterialPrice;
     const hundreds = Math.floor(price / 100).toString();
     const tens = Math.floor((price % 100) / 10).toString();
     const units = (price % 10).toString();
@@ -292,20 +293,14 @@ function initBespokeBuilder() {
     return Math.max(1, Number(Math.round(volume || 1)));
   }
 
-   function getPricing(state) {
-     const volumeCm3 = getVolumeCm3(state);
-     const totalPrice = volumeCm3 * PRICE_PER_CM3;
-     const quantity = Math.ceil(totalPrice / BASE_PRICE);
-     const displayPrice = (quantity * BASE_PRICE).toFixed(2);
-     return Number(displayPrice);
-  }
-
-  function getCartPricing(state) {
+  function getPricing(state) {
+    const pricing = customPricing || pricingFallback;
     const volumeCm3 = getVolumeCm3(state);
-    const totalPrice = volumeCm3 * PRICE_PER_CM3;
-    const quantity = Math.ceil(totalPrice / BASE_PRICE);
-    const displayPrice = (quantity * BASE_PRICE).toFixed(2);
-    return { totalPrice, quantity, displayPrice };
+    const baseCost = volumeCm3 * (pricing.baseRate || pricingFallback.baseRate);
+    const panelCost = Object.values(state.panels)
+      .reduce((sum, panelColor) => sum + (pricing.panelCosts?.[panelColor] ?? pricingFallback.panelCosts[panelColor] ?? 0), 0);
+    const cornerCost = state.cornerType === 'metal' ? (pricing.metalCorners || pricingFallback.metalCorners) : 0;
+    return Number((baseCost + panelCost + cornerCost).toFixed(2));
   }
 
   function updatePreview(state) {
@@ -352,8 +347,7 @@ function initBespokeBuilder() {
     const clampedY = Math.min(Math.max((manualRotation.y || 0), -45), 45);
     caseElement.style.transform = `rotateX(${clampedX}deg) rotateY(${clampedY}deg) scale(1.08)`;
 
-    const { displayPrice } = getCartPricing(state);
-    const price = Number(displayPrice);
+    const price = getPricing(state);
     const priceEstimate = builderSection.querySelector('#builderPriceEstimate');
     const dimensionPriceEstimate = builderSection.querySelector('#dimensionPriceEstimate');
     const summaryPrice = builderSection.querySelector('#summaryPrice');
@@ -581,7 +575,6 @@ function initBespokeBuilder() {
     const baseProductId = Number(builderSection.dataset.customProductId || 0);
     const variantId = Number(builderSection.dataset.customVariantId || 0) || baseProductId || null;
     const volume = getVolumeCm3(state);
-    const { quantity, displayPrice } = getCartPricing(state);
     const selectedCorner = cornerOptions.find((option) => option.id === state.cornerType) || cornerOptions[0];
     const configurationPayload = {
       object: state.object || 'Sur mesure',
@@ -591,7 +584,7 @@ function initBespokeBuilder() {
       volumeCm3: volume,
       panels: state.panels,
       cornerType: selectedCorner.label,
-      price: Number(displayPrice),
+      price: Number(price.toFixed(2)),
       currency: 'EUR'
     };
 
@@ -607,7 +600,7 @@ function initBespokeBuilder() {
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify({
         id: variantId,
-        quantity,
+        quantity: 1,
         properties: {
           Objet: state.object || 'Sur mesure',
           Dimensions: `${Number(state.width)} x ${Number(state.depth)} x ${Number(state.height)} cm`,
@@ -619,7 +612,7 @@ function initBespokeBuilder() {
           'Back Panel': state.panels.back || 'Transparent',
           'Left Panel': state.panels.left || 'Transparent',
           'Right Panel': state.panels.right || 'Transparent',
-          'Prix estimé': formatCurrency(Number(displayPrice)),
+          'Prix estimé': formatCurrency(price),
           'Configuration finale': JSON.stringify(configurationPayload)
         }
       })

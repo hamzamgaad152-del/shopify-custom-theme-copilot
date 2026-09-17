@@ -1,4 +1,5 @@
-<section class="product-template" data-section-id="{{ section.id }}" data-product-handle="{{ product.handle }}" data-configurator-product="{% if template.suffix == 'configurator' %}true{% else %}false{% endif %}">
+{% assign is_configurator_product = template.suffix == 'configurator' %}
+<section class="product-template" data-section-id="{{ section.id }}" data-product-handle="{{ product.handle }}" data-product-json-url="/products/{{ product.handle }}.js" data-configurator-product="{{ is_configurator_product }}">
   <div class="container">
     <div class="product-template__grid">
       <div class="product-gallery reveal">
@@ -43,7 +44,7 @@
             </div>
           {% endunless %}
 
-          {% if template.suffix == 'configurator' %}
+          {% if is_configurator_product %}
             <div class="product-form__dimensions" data-digit-dimensions>
               <p class="product-form__label">Dimensions (cm)</p>
               <div class="dimension-grid">
@@ -66,7 +67,7 @@
             </button>
           </div>
 
-          {% if section.settings.show_dynamic_checkout and template.suffix != 'configurator' %}
+          {% if section.settings.show_dynamic_checkout and is_configurator_product == false %}
             <div class="product-form__payment">{{ form | payment_button }}</div>
           {% endif %}
         {% endform %}
