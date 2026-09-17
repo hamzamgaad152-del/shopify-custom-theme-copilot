@@ -3,6 +3,9 @@
  * Lightweight, vanilla JavaScript for responsive navigation, product forms, and interactions.
  */
 
+const PRICE_PER_CM3 = 0.002; // Change this value to update the custom case price.
+const BASE_PRICE = 0.01; // The 1-cent Shopify base product.
+
 window.EcrinluxTheme = window.EcrinluxTheme || {};
 
 function initMobileNav() {
@@ -200,14 +203,20 @@ function initBespokeBuilder() {
     return Math.max(1, Number(Math.round(volume || 1)));
   }
 
-  function getPricing(state) {
-    const pricing = customPricing || pricingFallback;
+   function getPricing(state) {
+     const volumeCm3 = getVolumeCm3(state);
+     const totalPrice = volumeCm3 * PRICE_PER_CM3;
+     const quantity = Math.ceil(totalPrice / BASE_PRICE);
+     const displayPrice = (quantity * BASE_PRICE).toFixed(2);
+     return Number(displayPrice);
+  }
+
+  function getCartPricing(state) {
     const volumeCm3 = getVolumeCm3(state);
-    const baseCost = volumeCm3 * (pricing.baseRate || pricingFallback.baseRate);
-    const panelCost = Object.values(state.panels)
-      .reduce((sum, panelColor) => sum + (pricing.panelCosts?.[panelColor] ?? pricingFallback.panelCosts[panelColor] ?? 0), 0);
-    const cornerCost = state.cornerType === 'metal' ? (pricing.metalCorners || pricingFallback.metalCorners) : 0;
-    return Number((baseCost + panelCost + cornerCost).toFixed(2));
+    const totalPrice = volumeCm3 * PRICE_PER_CM3;
+    const quantity = Math.ceil(totalPrice / BASE_PRICE);
+    const displayPrice = (quantity * BASE_PRICE).toFixed(2);
+    return { totalPrice, quantity, displayPrice };
   }
 
   function updatePreview(state) {
@@ -254,7 +263,8 @@ function initBespokeBuilder() {
     const clampedY = Math.min(Math.max((manualRotation.y || 0), -45), 45);
     caseElement.style.transform = `rotateX(${clampedX}deg) rotateY(${clampedY}deg) scale(1.08)`;
 
-    const price = getPricing(state);
+    const { displayPrice } = getCartPricing(state);
+    const price = Number(displayPrice);
     const priceEstimate = builderSection.querySelector('#builderPriceEstimate');
     const dimensionPriceEstimate = builderSection.querySelector('#dimensionPriceEstimate');
     const summaryPrice = builderSection.querySelector('#summaryPrice');
@@ -482,6 +492,7 @@ function initBespokeBuilder() {
     const baseProductId = Number(builderSection.dataset.customProductId || 0);
     const variantId = Number(builderSection.dataset.customVariantId || 0) || baseProductId || null;
     const volume = getVolumeCm3(state);
+    const { quantity, displayPrice } = getCartPricing(state);
     const selectedCorner = cornerOptions.find((option) => option.id === state.cornerType) || cornerOptions[0];
     const configurationPayload = {
       object: state.object || 'Sur mesure',
@@ -491,7 +502,7 @@ function initBespokeBuilder() {
       volumeCm3: volume,
       panels: state.panels,
       cornerType: selectedCorner.label,
-      price: Number(price.toFixed(2)),
+      price: Number(displayPrice),
       currency: 'EUR'
     };
 
@@ -507,7 +518,7 @@ function initBespokeBuilder() {
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify({
         id: variantId,
-        quantity: volume,
+        quantity,
         properties: {
           Objet: state.object || 'Sur mesure',
           Dimensions: `${Number(state.width)} x ${Number(state.depth)} x ${Number(state.height)} cm`,
@@ -519,7 +530,7 @@ function initBespokeBuilder() {
           'Back Panel': state.panels.back || 'Transparent',
           'Left Panel': state.panels.left || 'Transparent',
           'Right Panel': state.panels.right || 'Transparent',
-          'Prix estimé': formatCurrency(price),
+          'Prix estimé': formatCurrency(Number(displayPrice)),
           'Configuration finale': JSON.stringify(configurationPayload)
         }
       })
