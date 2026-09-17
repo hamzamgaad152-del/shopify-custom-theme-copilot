@@ -1,4 +1,4 @@
-<section class="product-template" data-section-id="{{ section.id }}">
+<section class="product-template" data-section-id="{{ section.id }}" data-product-handle="{{ product.handle }}" data-configurator-product="{% if template.suffix == 'configurator' %}true{% else %}false{% endif %}">
   <div class="container">
     <div class="product-template__grid">
       <div class="product-gallery reveal">
@@ -26,24 +26,38 @@
         {% form 'product', product, id: 'ProductForm', class: 'product-form' %}
           {% assign current_variant = product.selected_or_first_available_variant %}
 
-          {% if product.has_only_default_variant %}
-            <input type="hidden" name="id" value="{{ current_variant.id }}">
-          {% else %}
-            <div class="product-form__variant-selector">
-              <label for="Option-{{ section.id }}" class="product-form__label">Finition</label>
-              <select name="id" id="Option-{{ section.id }}" class="product-form__select" data-variant-select>
-                {% for variant in product.variants %}
-                  <option value="{{ variant.id }}" {% if variant == current_variant %}selected="selected"{% endif %} {% unless variant.available %}disabled="disabled"{% endunless %} data-price="{{ variant.price | money }}" data-available="{{ variant.available }}">
-                    {{ variant.title }} - {{ variant.price | money }} {% unless variant.available %}(Indisponible){% endunless %}
-                  </option>
-                {% endfor %}
-              </select>
+          <input type="hidden" name="id" value="{{ current_variant.id }}" data-selected-variant>
+
+          {% unless product.has_only_default_variant %}
+            <div class="product-form__variant-selector" data-option-selectors>
+              {% for option in product.options_with_values %}
+                <div class="product-form__option">
+                  <label for="Option-{{ section.id }}-{{ forloop.index }}" class="product-form__label">{{ option.name }}</label>
+                  <select id="Option-{{ section.id }}-{{ forloop.index }}" class="product-form__select" data-product-option data-option-position="{{ option.position }}">
+                    {% for value in option.values %}
+                      <option value="{{ value | escape }}" {% if option.selected_value == value %}selected="selected"{% endif %}>{{ value }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              {% endfor %}
+            </div>
+          {% endunless %}
+
+          {% if template.suffix == 'configurator' %}
+            <div class="product-form__dimensions" data-digit-dimensions>
+              <p class="product-form__label">Dimensions (cm)</p>
+              <div class="dimension-grid">
+                <label>Longueur<input type="number" min="5" max="200" step="1" value="20" data-digit-dimension="length"></label>
+                <label>Largeur<input type="number" min="5" max="200" step="1" value="16" data-digit-dimension="width"></label>
+                <label>Hauteur<input type="number" min="5" max="200" step="1" value="20" data-digit-dimension="height"></label>
+              </div>
+              <p class="builder-price" data-digit-price aria-live="polite">Prix estimé : 0,00 €</p>
             </div>
           {% endif %}
 
           <div class="product-form__quantity-wrapper">
             <label for="Quantity-{{ section.id }}" class="product-form__label">Quantité</label>
-            <input type="number" name="quantity" id="Quantity-{{ section.id }}" class="product-form__quantity-input" value="1" min="1">
+            <input type="hidden" name="quantity" id="Quantity-{{ section.id }}" value="1" data-product-quantity>
           </div>
 
           <div class="product-form__actions">
@@ -52,7 +66,7 @@
             </button>
           </div>
 
-          {% if section.settings.show_dynamic_checkout %}
+          {% if section.settings.show_dynamic_checkout and template.suffix != 'configurator' %}
             <div class="product-form__payment">{{ form | payment_button }}</div>
           {% endif %}
         {% endform %}
