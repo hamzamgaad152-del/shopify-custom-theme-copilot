@@ -47,8 +47,17 @@
                 </td>
                 <td>
                   {%- if item.properties and item.properties['Volume cm³'] != blank -%}
-                    <input type="hidden" name="updates[]" value="{{ item.quantity }}">
-                    <span style="display: inline-block; min-width: 48px; text-align: center; padding: 8px 12px; border: 1px solid var(--color-border); border-radius: 999px; background: rgba(255,255,255,0.02);">1</span>
+                    <!-- VISUAL INPUT (No 'name' attribute so it doesn't submit) -->
+                    <input type="number"
+                      class="cart-quantity-visual"
+                      value="1"
+                      readonly>
+
+                    <!-- HIDDEN INPUT (Contains the real hacked quantity and submits to Shopify) -->
+                    <input type="hidden"
+                      name="updates[{{ item.key }}]"
+                      value="{{ item.quantity }}"
+                      id="Quantity-{{ item.index | plus: 1 }}">
                     <div style="font-size: 0.75rem; color: var(--color-secondary); margin-top: 6px;">Volume : {{ item.properties['Volume cm³'] }} cm³</div>
                   {%- else -%}
                     <input 
