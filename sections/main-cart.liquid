@@ -54,9 +54,9 @@
 
                   <!-- Hidden Input for Shopify (This sends the REAL quantity to checkout) -->
                   <input type="hidden"
-                    name="updates[{{ item.key }}]"
+                    name="updates[]"
                     value="{{ item.quantity }}"
-                    id="Quantity-{{ item.index | plus: 1 }}">
+                    id="Quantity-{{ forloop.index }}">
                   {%- if item.properties and item.properties['Volume cm³'] != blank -%}
                     <div style="font-size: 0.75rem; color: var(--color-secondary); margin-top: 6px;">Volume : {{ item.properties['Volume cm³'] }} cm³</div>
                   {%- endif -%}
@@ -83,7 +83,7 @@
             <button type="submit" name="update" class="button button--secondary">
               {{ 'sections.cart.update' | t }}
             </button>
-            <button type="submit" name="checkout" class="button button--primary">
+            <button type="submit" name="checkout" formaction="/checkout" class="button button--primary">
               {{ 'sections.cart.checkout' | t }}
             </button>
           </div>
