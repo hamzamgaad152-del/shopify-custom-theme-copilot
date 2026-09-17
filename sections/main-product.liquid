@@ -1,8 +1,5 @@
-{% assign is_configurator_product = false %}
-{% if template.suffix == 'configurator' or product.tags contains 'custom-case' or product.handle == 'ecrinlux-boite-sur-mesure' %}
-  {% assign is_configurator_product = true %}
-{% endif %}
-<section class="product-template" data-section-id="{{ section.id }}" data-product-handle="{{ product.handle }}" data-configurator-product="{{ is_configurator_product }}">
+{% assign is_configurator_product = template.suffix == 'configurator' %}
+<section class="product-template" data-section-id="{{ section.id }}" data-product-handle="{{ product.handle }}" data-product-json-url="/products/{{ product.handle }}.js" data-configurator-product="{{ is_configurator_product }}">
   <div class="container">
     <div class="product-template__grid">
       <div class="product-gallery reveal">
